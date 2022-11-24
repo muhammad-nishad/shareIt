@@ -93,6 +93,7 @@ const tempYear= new Date().getFullYear()
       bDay,
       gender,
     });
+    console.log(data,'data');
     setError("");
     setSuccess(data.message);
     const {message, ...rest} = data;

@@ -39,7 +39,7 @@ const UserBox = styled(Box)(({ theme }) => ({
     }
 }))
 
-function Navbar() {
+function Navbar({color}) {
     const [showSearch, setShowSearch] = useState(false)
     const [searchUser, setSearchUser] = useState([])
     const dispatch = useDispatch()
@@ -60,7 +60,9 @@ function Navbar() {
     }, [formik.values.users])
     return (
 
-        <AppBar position='sticky'>
+
+
+          <AppBar  position='sticky' >
             < StyledToolBar>
                 <Typography variant='h6' sx={{ display: { xs: 'none', sm: 'block' } }}>
                     ShareIt
@@ -112,7 +114,10 @@ function Navbar() {
                     horizontal: 'right',
                 }}
             >
-                <MenuItem>Profile</MenuItem>
+                <MenuItem onClick={()=>{
+                    Navigate('/profile')
+
+                }} >Profile</MenuItem>
                 <MenuItem>My account</MenuItem>
                 <MenuItem onClick={() => {
                     Cookies.remove('user')

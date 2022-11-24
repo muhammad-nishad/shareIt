@@ -39,8 +39,10 @@ export default function LoginForm({ setVisible }) {
         email,
         password,
       })
-      dispatch({ type: "LOGIN", payload: data });
-      Cookies.set("user", JSON.stringify(data))
+      
+      console.log(JSON.stringify(data),'data');
+      Cookies.set("user",JSON.stringify(data))
+      dispatch({ type: "LOGIN", payload: JSON.stringify(data?.user)});
       navigate("/")
 
     } catch (error) {
@@ -52,7 +54,7 @@ export default function LoginForm({ setVisible }) {
   return (
     <div className="login_wrap">
       <div className="login_1">
-        <img src="../../icons/NearBy.png" alt="" />
+        <img src="../../icons/ShareIt.png" alt="shareIt" />
         <span>
           Share It helps you connect and share with the people in your life.
         </span>

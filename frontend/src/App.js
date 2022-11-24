@@ -6,19 +6,22 @@ import Adminhome from "./pages/adminhome/Home";
 import LoggedInRoutes from "./routes/LoggedInRoutes";
 import NotLoggedInRoutes from "./routes/NotLoggedInRoutes";
 import UserHome from "./components/userhome/UserHome";
+import ProfilePage from "./pages/profile";
 
 function App() {
   return (
     <div>
       <Routes>
-        
         <Route element={<LoggedInRoutes />} >
           <Route path="/" element={<UserHome />} exact />
+          <Route path="/profile" element={<ProfilePage />} exact />
         </Route>
         <Route element={<NotLoggedInRoutes />}>
           <Route path="/login" element={<Login />} exact />
           <Route path="/authorizer" element={<Admin />} exact />
           <Route path="/authorizer/home" element={<Adminhome />} exact />
+          
+
         </Route>
       </Routes>
     </div>

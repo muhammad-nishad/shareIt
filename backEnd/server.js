@@ -3,17 +3,22 @@ const mongoose=require('mongoose')
 const cors = require('cors');
 const {readdirSync}=require('fs')
 const session = require('express-session')
-const dotenv=require('dotenv').config()
+require('dotenv').config()
+const morgan = require('morgan')
+
 const app = express();
 app.use(express.json())
 app.use(cors())
-const oneMonth = 1000 * 60 * 60 * 24 * 30;
-app.use(session({
-    secret: 'keyboard cat',
-    resave: true,
-    saveUninitialized: true,
-    cookie: { maxAge: oneMonth }
-  }))
+// const oneMonth = 1000 * 60 * 60 * 24 * 30;
+// app.use(session({
+//     secret: 'keyboard cat',
+//     resave: true,
+//     saveUninitialized: true,
+//     cookie: { maxAge: oneMonth }
+//   }))
+app.use(morgan('dev'))
+
+  
 //database
 mongoose.connect(process.env.DATABASE_URL,{
     useNewUrlParser:true,

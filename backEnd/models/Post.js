@@ -2,22 +2,45 @@ const mongoose=require("mongoose");
 
 const postSchema=mongoose.Schema(
     {
-        userId:{
-            type:String,
-            required:true
+        userid:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+            // required:true
         },
-        desc:{
+        description:{
             type:String,
-            required:true
+            // required:true
         },
         img:{
-            type:String,
+            type:Array,
         },
         likes:{
             type:Array,
             default:[],
+        },
+        comments:[
+            {
+                comment:{
+                    type:String
+                },
+                commentBy:{
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:'User'
+
+                },
+                createdAt:{
+                    type:String,
+                    default:new Date().toDateString()
+                }
+            }
+        ],
+        date:{
+            type:String
         }
 
+    },
+    {
+        timestamsps:true
     }
 );
 

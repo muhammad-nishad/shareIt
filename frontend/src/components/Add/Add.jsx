@@ -2,6 +2,10 @@ import { Fab, Modal, Tooltip, Box, styled, Typography, Avatar, TextField, Button
 import React, { useState } from 'react'
 import { Add as AddIcon, DateRange, EmojiEmotions, Image, PersonAdd, VideoCameraBack } from '@mui/icons-material'
 import { Stack } from '@mui/system'
+import './add.css'
+import axios, { Axios } from 'axios'
+import Cookies from 'js-cookie'
+import { useSelector } from 'react-redux'
 
 const StyledModal = styled(Modal)({
     display: 'flex',
@@ -17,7 +21,32 @@ const UserBox = styled(Box)({
 })
 
 function Add() {
+    const uploadImage = () => {
+        const formData = new FormData()
+        formData.append("file", imageSelected)
+        formData.append("upload_preset", "kacy6ucl")
+        try {
+            let token1 =  Cookies.get('user')
+            token1 = JSON.parse(token1)
+            const {token } = token1
+            console.log(token,'tokennn');
+            axios.post("https://api.cloudinary.com/v1_1/dl0nkbe8b/image/upload", formData).then((response) => {
+                const img = response.data.url
+                return axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, { img,description }, { headers: { token: token } }).then((response) => {
+                })
+            })
+
+        } catch (error) {
+            console.log(error, 'errrrrrr');
+
+        }
+
+    };
+    const { user } = useSelector(state => ({ ...state }))
+    // console.log(user?.user?.first_name)
     const [open, setOpen] = useState(false)
+    const [imageSelected, setImageSelected] = useState()
+    const [description,setDescription]=useState()
     return (
         <>
             <Tooltip onClick={e => setOpen(true)}
@@ -37,8 +66,7 @@ function Add() {
                 open={open}
                 onClose={e => setOpen(false)}
                 aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
+                aria-describedby="modal-modal-description" >
                 <Box width={400} height={280} bgcolor='white' p={3} borderRadius={5} >
                     <Typography variant='h6' color='grey' textAlign='center'>Create Post</Typography>
                     <UserBox>
@@ -46,7 +74,7 @@ function Add() {
                             src=''
                             sx={{ width: 30, height: 30 }}
                         />
-                        <Typography fontWeight={500} variant='span'>Muhammad Nishad</Typography>
+                        <Typography fontWeight={500} variant='span'>{user?.user?.first_name}</Typography>
                     </UserBox>
                     <TextField
                         sx={{ width: '100%' }}
@@ -55,22 +83,30 @@ function Add() {
                         rows={3}
                         placeholder="What's on your mind ?"
                         variant="standard"
+                        name='description'
+                        onChange={(e)=>{
+                            setDescription(e.target.value);
+                        }}
                     />
                     <Stack direction='row' gap={1} marginTop={2} mb={3}>
-                        <EmojiEmotions color='primary' />
-                        <Image color='secondary' />
-                        <VideoCameraBack color='success' />
-                        <PersonAdd color='error' />
+                        <input
+                            style={{ display: 'none' }}
+                            type="file"
+                            onChange={(e) => {
+                                setImageSelected(e.target.files[0])
+                            }}
+                            id="image_input"
+                        />
+                        <label className="img_label" htmlFor="image_input">
+                            <Image color='secondary'
+                            />
+                        </label>
                     </Stack>
-                    <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                        <Button>Post</Button>
-                        <Button sx={{width:'100px'}}><DateRange/></Button>
+                    <ButtonGroup  fullWidth variant="contained" aria-label="outlined primary button group">
+                        <Button    onClick={uploadImage}  >Post</Button>
                     </ButtonGroup>
                 </Box>
             </StyledModal>
-
-
-
         </>
     )
 }

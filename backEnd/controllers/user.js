@@ -7,7 +7,8 @@ const { transporter } = require("../nodemailer/nodeMailer");
 const nodemailer = require('nodemailer');
 const { db, ensureIndexes } = require("../models/User");
 const Otp = require('../models/Otp')
-const OtpVerification = require('../nodemailer/nodeMailer')
+const OtpVerification = require('../nodemailer/nodeMailer');
+const { default: mongoose } = require("mongoose");
 
 const sendOtp = async ({ _id, email }, res) => {
     const transport = nodemailer.createTransport({
@@ -27,28 +28,28 @@ const sendOtp = async ({ _id, email }, res) => {
             <p>This code will be expires in 1 hour</b></p>`
 
     };
-   
-    
-        // const cryptedOtp = await bcrypt.hash(otp, 12)
+
+
+    // const cryptedOtp = await bcrypt.hash(otp, 12)
 
     await new Otp({
         userId: _id,
-         email:email,
-         otp:otp,
+        email: email,
+        otp: otp,
         //   otp:cryptedOtp,
         createdAt: Date.now(),
         expiresAt: Date.now() + 360000
     }).save()
     transport.sendMail(mailOptions)
-    .catch((err) => {
-        console.log(err);
-    })
+        .catch((err) => {
+            console.log(err);
+        })
     res.send({ message: 'please check your email and verify the account.' })
 
 }
 
-const saveUserData = async (userData)=>{
-    console.log('hi',userData);
+const saveUserData = async (userData) => {
+    console.log('hi', userData);
     const {
         first_name,
         last_name,
@@ -60,24 +61,24 @@ const saveUserData = async (userData)=>{
         bMonth,
         bDay
     } = userData;
-    const cryptedPassword = await bcrypt.hash(password, 12)
-    let tempUsername = first_name + last_name;
-    let newUsername = await validateUsername(tempUsername);
-    console.log(cryptedPassword,'pass');
-    console.log(newUsername,'newnameeee');
-    const user = await new User({
-        first_name,
-        last_name,
-        user_name: newUsername,
-        email,
-        password: cryptedPassword,
-        gender,
-        bYear,
-        bMonth,
-        bDay
-    })
-    user.save()
-    console.log(user,'datauserrrrrr');
+    // const cryptedPassword = await bcrypt.hash(password, 12)
+    // let tempUsername = first_name + last_name;
+    // let newUsername = await validateUsername(tempUsername);
+    // console.log(cryptedPassword, 'pass');
+    // console.log(newUsername, 'newnameeee');
+    // const user = await new User({
+    //     first_name,
+    //     last_name,
+    //     user_name: newUsername,
+    //     email,
+    //     password: cryptedPassword,
+    //     gender,
+    //     bYear,
+    //     bMonth,
+    //     bDay
+    // })
+    // user.save()
+    console.log(user, 'datauserrrrrr');
     return user;
 }
 
@@ -121,61 +122,82 @@ exports.register = async (req, res) => {
                 message: "password must be atleast 6 characters.",
             });
         }
-        req.session.tempUserData = req.body;
-        console.log(req.session,'sessionnnn');
-        console.log(req.session.tempUserData,'tempdata');
-        sendOtp(req.session.tempUserData, res);
+        const cryptedPassword = await bcrypt.hash(password, 12)
+        let tempUsername = first_name + last_name;
+        let newUsername = await validateUsername(tempUsername);
+        console.log(cryptedPassword, 'pass');
+        console.log(newUsername, 'newnameeee');
+        const user = await new User({
+            first_name,
+            last_name,
+            user_name: newUsername,
+            email,
+            password: cryptedPassword,
+            gender,
+            bYear,
+            bMonth,
+            bDay
+        })
+        user.save()
+        const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
+        console.log(emailVerification, 'tokennn');
+        res.json({ token: emailVerification })
+        // req.session.tempUserData = req.body;
+        // console.log(req.session,'sessionnnn');
+        // console.log(req.session.tempUserData,'tempdata');
+        // sendOtp(req.session.tempUserData, res);
     } catch (error) {
         res.status(500).json({ message: error.message })
 
     };
 
 }
- 
+
 //verify otp
-exports.verifyotp = async (req, res) => {
-    console.log(req.session,'user');
-    console.log('ki');
-    try {
-        const { otp } = req.body;
-        const {email}=req.session.tempUserData
-        console.log(req.body);
-        console.log(otp,'otp');
-        // console.log(req.session.tempUserData);
-        // const email = req.session.tempUserData.email;
-        // console.log(req.session.tempUserData);
-        console.log('asdf');
-        if (!otp) {
-            res.status(401).json({ message: "provide valid credentiols" })
-        } else {
-            console.log(email,otp, 'chek');
-           const otpVerified =  await Otp.findOne({email, otp});
-           if(!otpVerified) {
-            
-               res.status(401).json({message: 'Invalid otp.'})
-           }else{
+// exports.verifyotp = async (req, res) => {
+//     console.log(req.session, 'user');
+//     console.log('ki');
+//     try {
+//         const { otp } = req.body;
+//         const { email } = req.session.tempUserData
+//         console.log(req.body);
+//         console.log(otp, 'otp');
+//         // console.log(req.session.tempUserData);
+//         // const email = req.session.tempUserData.email;
+//         // console.log(req.session.tempUserData);
+//         console.log('asdf');
+//         if (!otp) {
+//             res.status(401).json({ message: "provide valid credentiols" })
+//         } else {
+//             console.log(email, otp, 'chek');
+//             const otpVerified = await Otp.findOne({ email, otp });
+//             if (!otpVerified) {
 
-           
-           console.log('helors');
-           console.log(req.session.tempUserData,'data');
-           const user = await saveUserData(req.session.tempUserData)
-           console.log(user,'dataatattatatatata');
-           const token = generateToken({ id: user._id,email:user.email.toString(), }, "30m")
-            res.json({message: 'Account created successfully.', 
-        token})
+//                 res.status(401).json({ message: 'Invalid otp.' })
+//             } else {
 
-        }}
-    } catch (error) {
-        res.status(500).json(error)
+//                 console.log('helors');
+//                 console.log(req.session.tempUserData, 'data');
+//                 const user = await saveUserData(req.session.tempUserData)
+//                 console.log(user, 'dataatattatatatata');
+//                 const token = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
+//                 res.json({
+//                     message: 'Account created successfully.',
+//                     token,
+//                     user
+//                 })
+//             }
+//         }
+//     } catch (error) {
+//         res.status(500).json(error)
 
-    }
-}
+//     }
+// }
 
 
 //userLogin
 exports.login = async (req, res) => {
     try {
-        console.log('sdfa');
         const { email, password } = req.body
         const user = await User.findOne({ email })
         if (!user) {
@@ -185,9 +207,8 @@ exports.login = async (req, res) => {
         if (!check) {
             return res.status(400).json({ message: "invalid user" })
         }
-        const emailVerification = generateToken({ id: user._id,email:user.email.toString(), }, "30m")
-        console.log(emailVerification);
-        res.json({ message: "login successfully" ,token:emailVerification})
+        const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
+        res.json({ token: emailVerification, user: user })
     } catch (error) {
         res.status(500).json({ message: error.message })
 
@@ -240,7 +261,15 @@ exports.unfollow = async (req, res) => {
 }
 //create a post
 exports.posts = async (req, res) => {
-    const newPost = new Post(req.body);
+    const userid = req.user.id
+    console.log(req.body, 'req.bodyyy');
+    mongoose.Types.ObjectId(userid)
+    console.log(typeof (userid));
+    const newPost = new Post({
+        img: req.body.img,
+        description: req.body.description,
+        userid
+    });
     try {
         const savedPost = await newPost.save();
         res.status(200).json("New post created successfully")
@@ -285,12 +314,17 @@ exports.deletePost = async (req, res) => {
 
 exports.likePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
-        if (!post.likes.includes(req.body.userId)) {
-            await Post.updateOne({ $push: { likes: req.body.userId } });
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const postid = mongoose.Types.ObjectId(req.body.postid)
+        console.log(postid, 'postt');
+        const post = await Post.findById(postid);
+        if (!post.likes.includes(userid)) {
+            console.log('like', post);
+            await Post.updateOne({ _id: postid }, { $push: { likes: userid } });
             res.status(200).json("You liked the post")
         } else {
-            await Post.updateOne({ $pull: { likes: req.body.userId } });
+            console.log('dislike');
+            await Post.updateOne({ _id: postid }, { $pull: { likes: userid } });
             res.status(200).json("The post has been disliked ")
         }
     } catch (error) {
@@ -298,18 +332,63 @@ exports.likePost = async (req, res) => {
     }
 }
 
+exports.addComment = async (req, res) => {
+    try {
+        console.log(req.body,'req.body');
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const postid = mongoose.Types.ObjectId(req.body.postid)
+        console.log(userid, postid)
+        const post = await Post.findById(postid);
+        if (req.body.values.comment == null) {
+            return res.json({ message: "Add any comment" })
+        }
+        let commented=await Post.updateOne({ _id: postid },
+            {
+                $push: {
+                    comments: {
+                        comment: req.body.values.comment,
+                        commentBy: userid
+                    }
+                }
+            })
+            console.log(commented,"response of comment")
+            res.json(commented)
+
+    } catch (error) {
+        res.status(500).json(error)
+
+    }
+}
+
+
+
+
+
+
 //userSearch
 
-exports.userSearch=async(req,res)=>{
-    const searchResult=await User.find({first_name:new RegExp('^' + req.params.data,'i')})
-    console.log(searchResult);
-    const search=searchResult.map((value)=>
-        value.first_name+" "+value.last_name
+exports.userSearch = async (req, res) => {
+    const searchResult = await User.find({ first_name: new RegExp('^' + req.params.data, 'i') })
+    const search = searchResult.map((value) =>
+        value.first_name + " " + value.last_name
     )
-    if(search){
+    if (search) {
         res.status(200).json(search)
-    }else{
-        res.status(400).json({message:"no user found"})
+    } else {
+        res.status(400).json({ message: "no user found" })
     }
+}
+exports.getUserPost = async (req, res) => {
+    try {
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const post = await Post.find()
+        res.json(post)
+
+    } catch (error) {
+        console.log(error);
+
+    }
+
+
 }
 
