@@ -6,8 +6,11 @@ export function userReducer(state, action) {
             return action.payload;
         case "LOGOUT":
             return null;
+        case 'REFRESH':
+            // alert('dd')
+            return { ...state, refresh: [] };
 
         default:
-            return state;
+            return { ...state }
     }
 }

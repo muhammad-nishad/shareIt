@@ -5,7 +5,8 @@ const {readdirSync}=require('fs')
 const session = require('express-session')
 require('dotenv').config()
 const morgan = require('morgan')
-
+const connectDB=require('./config/db')
+connectDB()
 const app = express();
 app.use(express.json())
 app.use(cors())
@@ -19,11 +20,9 @@ app.use(cors())
 app.use(morgan('dev'))
 
   
-//database
-mongoose.connect(process.env.DATABASE_URL,{
-    useNewUrlParser:true,
-}).then(()=> console.log("databse connected successfully"))
-.catch((err)=> console.log("error",err))
+//database connection
+connectDB()
+
 
 //for dynamically rendering the routes
 readdirSync('./routes').map((router)=> app.use('/',require('./routes/'+router))); 

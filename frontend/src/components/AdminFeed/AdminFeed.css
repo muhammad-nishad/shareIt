@@ -1,0 +1,10 @@
+.feedMain{
+    width: 100%;  
+}
+
+@media screen and (min-width:900px) {
+    .feedMain{
+    margin-left: 8%;
+    width: 82%;
+    }
+}

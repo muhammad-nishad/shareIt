@@ -63,25 +63,27 @@ const userSchema = mongoose.Schema(
       // required: [true, "Birth Day is required"],
       trim: true,
     },
-    // verified: {
-    //   type: Boolean,
-    //   default: false,
-    // },
+    Active: {
+      type: Boolean,
+      default: true,
+    },
     // friends: {
     //   type: Array,
     //   default: [],
     // },
     following: {
       type: Array,
+      ref:"User",
       default: [],
     },
     followers: {
       type: Array,
+      ref:"User",
       default: [],
     },
-    verified:{
-      Boolean
-    }
+    // verified:{
+    //   Boolean
+    // }
     // requests: {
     //   type: Array,
     //   default: [],

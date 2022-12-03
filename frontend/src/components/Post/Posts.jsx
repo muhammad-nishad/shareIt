@@ -10,15 +10,12 @@ import { useSelector } from 'react-redux';
 
 function Posts() {
   const [{ posts }, dispatch] = useReducer(postsReducer, { posts: [] })
-  console.log(posts);
   const {user} = useSelector(state => ({ ...state }))
-  console.log(user,'user.token')
+  const refresh = useSelector((state)=> state.user.refresh)
   useEffect(() => {
     const token = user?.token
-    // console.log(token,'tokennnn');
-
+    console.log({refresh});
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getposts`, { headers: { token: token } }).then(({ data }) => {
-      console.log(data,'post adding');
       dispatch({
         type: "POSTS_SUCCESS",
         payload: data
@@ -26,11 +23,11 @@ function Posts() {
     }).catch(err => {
       console.log(err, 'catch block of axios');
     })
-  }, [])
+  }, [refresh])
   return (
     <>
       {
-        posts && posts.map((post) => (<Post post={post} />))
+         posts?.map((post) => (<Post key={post._id} post={post} />))
       }
     </>
   )

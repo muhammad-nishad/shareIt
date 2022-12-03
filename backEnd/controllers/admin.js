@@ -1,6 +1,8 @@
 const Admin = require('../models/Admin')
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const { generateToken } = require('../helpers/adminJwt')
+const { default: mongoose } = require("mongoose");
 exports.addAdmin = async (req, res) => {
    try {
       const { email, password } = req.body;
@@ -37,15 +39,16 @@ exports.login = async (req, res) => {
       const { email, password1 } = req.body;
       const admin = await Admin.findOne({ email })
       if (!admin) {
-         console.log('hi');
          res.status(400).json({ message: "invalid credential admin" })
       } else {
+
          const check = await bcrypt.compare(password1, admin.password)
          if (!check) {
-            
             return res.status(400).json({ message: "invalid credential admin" })
          }
-         res.json({ message: "login successfully" })
+         const adminToken = generateToken({ id: admin._id, email: admin.email.toString(), }, "30m")
+
+         res.json({ message: "login successfully", token: adminToken })
       }
    } catch (error) {
       res.status(400).json(error)
@@ -56,9 +59,24 @@ exports.login = async (req, res) => {
 //getting all users
 module.exports.getAllUsers = async (req, res, next) => {
    try {
-     const users = await User.find({},{first_name:1,last_name:1,email:1});
-     res.status(200).json(users);
+      const users = await User.find({}, { first_name: 1, last_name: 1, email: 1,Active:1,user_name:1 });
+      res.status(200).json(users);
    } catch (err) {
-     next(err);
+      next(err);
    }
- };
+};
+
+exports.userManagement = async (req, res) => {
+   try {
+      const userid = mongoose.Types.ObjectId(req.body.id)
+      const user = await User.findOne(userid)
+
+      const response = await user.updateOne({ $set: { Active: !user.Active } })
+      console.log(user.Active, 'user');
+      res.json(user.Active)
+   } catch (error) {
+      console.log(error);
+      res.status(500).json(error)
+
+   }
+}

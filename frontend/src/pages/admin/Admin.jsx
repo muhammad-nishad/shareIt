@@ -1,9 +1,7 @@
-
 import React from 'react'
 import axios from 'axios'
 import { useFormik } from 'formik'
 import { useNavigate } from 'react-router-dom'
-
 import { Avatar, Button, Grid, Paper, TextField, Typography } from '@mui/material'
 
 
@@ -15,8 +13,11 @@ export default function Admin() {
             password1: '',
         },
         onSubmit: values => {
-            axios.post(`${process.env.REACT_APP_BACKEND_URL}/authorizer/login`, values).then((e) => {
-                if (e.data.message === 'login successfully') {
+            axios.post(`${process.env.REACT_APP_BACKEND_URL}/authorizer/login`, values).then(({data}) => {
+                // console.log(JSON.stringify(data));
+                console.log(data.token,'dataaaa');
+                localStorage.setItem('admin',data.token)
+                if (data.token) {
                     navigate('/authorizer/home')
                 } else {
                     console.log('failed');
@@ -26,7 +27,7 @@ export default function Admin() {
     }
 
     )
-    const paperStyle = { padding: '30px 20px', width: 380, margin: "140px auto" }
+    const paperStyle = { padding: '30px 20px', width: 480, margin: "140px auto" }
     const headerStyle = { margin: 10 }
     const avatarStyle = { backgroundColor: 'black' }
     return (

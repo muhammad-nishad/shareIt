@@ -5,15 +5,17 @@ import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import HomeIcon from '@mui/icons-material/Home';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminSidebar() {
+  const Navigate = useNavigate()
   return (
     <>
     <Box>
       <Box position='fixed' >
         
     <List>
-        <ListItem disablePadding>
+        <ListItem >
           <ListItemButton component='a' href='#'>
             <ListItemIcon>
               <HomeIcon />
@@ -22,7 +24,7 @@ export default function AdminSidebar() {
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
+        <ListItem >
           <ListItemButton component='a' href='#'>
             <ListItemIcon>
             <PeopleOutlineOutlinedIcon/>
@@ -30,7 +32,7 @@ export default function AdminSidebar() {
             <ListItemText primary="Users" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
+        <ListItem >
           <ListItemButton component='a' href='#'>
             <ListItemIcon>
             <ReportProblemOutlinedIcon/>
@@ -38,8 +40,11 @@ export default function AdminSidebar() {
             <ListItemText primary="Reported Posts" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component='a' href='#'>
+        <ListItem >
+          <ListItemButton onClick={()=>{
+            localStorage.removeItem('admin')
+            Navigate('/authorizer')
+          }} component='a' href='#'>
             <ListItemIcon>
             <ExitToAppOutlinedIcon/>
             </ListItemIcon>

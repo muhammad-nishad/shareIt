@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Typography, styled, InputBase, Badge, Avatar, Menu, Me
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Box from '@mui/material/Box';
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import { Formik, useFormik } from 'formik';
 import axios from 'axios';
@@ -39,7 +39,7 @@ const UserBox = styled(Box)(({ theme }) => ({
     }
 }))
 
-function Navbar({color}) {
+function Navbar({ color }) {
     const [showSearch, setShowSearch] = useState(false)
     const [searchUser, setSearchUser] = useState([])
     const dispatch = useDispatch()
@@ -52,19 +52,23 @@ function Navbar({color}) {
     })
 
 
+    const getSearchUser = async () => {
+        const response = await axios.get(`http://localhost:8000/usersearch/${formik.values.users}`)
+        setSearchUser(response.data)
+    }
     useEffect(() => {
-        console.log(formik.values.users, 'data')
-        axios.get(`http://localhost:8000/usersearch/${formik.values.users}`).then((response) => {
-            setSearchUser(response.data)
-        })
+        getSearchUser();
     }, [formik.values.users])
+    console.log(searchUser)
     return (
 
 
 
-          <AppBar  position='sticky' >
+        <AppBar position='sticky' >
             < StyledToolBar>
-                <Typography variant='h6' sx={{ display: { xs: 'none', sm: 'block' } }}>
+                <Typography onClick={()=>{
+                    Navigate('/')
+                }} variant='h6' sx={{ display: { xs: 'none', sm: 'block',cursor:"pointer" } }}>
                     ShareIt
                 </Typography>
                 <Search sx={{ width: "20%", left: "50%" }}>
@@ -77,10 +81,12 @@ function Navbar({color}) {
                     />
                 </Search>
 
-                {showSearch ? <Box sx={{ width: "20%", backgroundColor: 'white', position: 'absolute', left: "38.5%", height: "50%", top: "85%", color: "black" }}>
-                    {searchUser}
-
-                </Box> : null}
+                {searchUser.length ?
+                    <Box sx={{ width: "20%", backgroundColor: 'white', position: 'absolute', left: "38.5%", height: "50%", top: "85%", color: "black" }}>
+                      {searchUser}
+                    </Box>
+                    : ""
+                }
                 <Icons>
                     <Badge badgeContent={4} color="error">
                         <MailIcon />
@@ -95,7 +101,9 @@ function Navbar({color}) {
                 </Icons>
                 <UserBox>
                     <Avatar alt="A" src="/static/images/avatar/1.jpg" sx={{ width: 30, height: 30 }}
-                        onClick={e => setOpen(true)}
+                        onClick={e =>
+                            setOpen(true)}
+
                     />
                     <Typography variant='span'>Nishad</Typography>
                 </UserBox>
@@ -114,14 +122,14 @@ function Navbar({color}) {
                     horizontal: 'right',
                 }}
             >
-                <MenuItem onClick={()=>{
+                <MenuItem onClick={() => {
                     Navigate('/profile')
 
                 }} >Profile</MenuItem>
                 <MenuItem>My account</MenuItem>
                 <MenuItem onClick={() => {
                     Cookies.remove('user')
-                    dispatch({type: 'LOGOUT', payload: null})
+                    dispatch({ type: 'LOGOUT', payload: null })
                     Navigate('/login')
                 }}>Logout</MenuItem>
             </Menu>

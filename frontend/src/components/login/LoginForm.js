@@ -39,10 +39,8 @@ export default function LoginForm({ setVisible }) {
         email,
         password,
       })
-      
-      console.log(JSON.stringify(data),'data');
-      Cookies.set("user",JSON.stringify(data))
-      dispatch({ type: "LOGIN", payload: JSON.stringify(data?.user)});
+      Cookies.set("user", JSON.stringify(data))
+      dispatch({ type: "LOGIN", payload: JSON.stringify(data?.user) });
       navigate("/")
 
     } catch (error) {
@@ -98,7 +96,7 @@ export default function LoginForm({ setVisible }) {
           <div className="sign_splitter"></div>
           <button className="blue_btn open_signup" onClick={() => setVisible(true)}>Create Account</button>
         </div>
-    
+
       </div>
     </div>
   )

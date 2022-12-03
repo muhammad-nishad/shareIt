@@ -1,15 +1,14 @@
-import { Box, Card, Typography, CardMedia, CardContent, CardActions, Avatar, IconButton, CardHeader, Checkbox, Collapse, styled, TextField, Button } from '@mui/material';
+import { Box, Card, Typography, CardMedia, CardContent, CardActions, Avatar, IconButton, CardHeader, Checkbox, Collapse, styled, TextField, Button, Modal } from '@mui/material';
 // import ShareIcon from '@mui/icons-material/Share';
 import { Favorite, FavoriteBorder, MoreVert } from '@mui/icons-material';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie'
 import { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
-import SendIcon from '@mui/icons-material/Send';
 
 
 
@@ -25,21 +24,23 @@ const ExpandMore = styled((props) => {
 }));
 
 
+
 export default function Post({ post }) {
-    console.log(post,'post');
-    // let liked = false;
     const { user } = useSelector(state => ({ ...state }))
-    // post.likes.map(id => {
-    //     if(id == user.user._id ){
-    //         liked = true
-    //     }
-    // })
+    const [likes, setLikes] = useState(false)
+    const [showMenu,setShowMenu]=useState(false)
+    const dispatch = useDispatch()
 
-
+    useEffect(() => {
+        post.likes.map((likes) => {
+            if (likes._id === user.id) {
+                setLikes(true)
+            }
+        })
+    }, [])
     //useselector
 
     const [expanded, setExpanded] = useState(false);
-
     const handleExpandClick = () => {
         setExpanded(!expanded);
     }
@@ -48,9 +49,8 @@ export default function Post({ post }) {
     userToken = JSON.parse(userToken)
 
     const addLike = () => {
-        console.log(userToken.token, 'token');
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/likePost`, { postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
-            console.log({ data });
+            dispatch({type:'REFRESH'})
         })
 
     }
@@ -59,15 +59,13 @@ export default function Post({ post }) {
             comment: ''
         },
         onSubmit: (values, { resetForm }) => {
-            console.log('values ', values)
             axios.post(`${process.env.REACT_APP_BACKEND_URL}/addcomment`, { values, postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
-                console.log(data, 'dataaa');
+                dispatch({type:'REFRESH'})
                 resetForm({ values: '' })
             })
         }
 
     })
-    console.log(formik.values.comment, 'comment');
     return (
         <>
             <Card sx={{ margin: 3 }}>
@@ -78,11 +76,20 @@ export default function Post({ post }) {
                         </Avatar>
                     }
                     action={
-                        <IconButton aria-label="settings">
+                        <IconButton onClick={() => {
+                            setShowMenu(true)
+                            
+
+                            console.log('report');
+                            <Modal keepMounted />
+
+                        }} aria-label="settings">
                             <MoreVert />
+
                         </IconButton>
                     }
-                    title={user?.user?.first_name}
+                    title={post.userid.first_name}
+                    
                     subheader="5 minutes ago"
                 />
                 {
@@ -94,27 +101,19 @@ export default function Post({ post }) {
                         alt="A"
                     />))
                 }
-
                 <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                        hey !its my first post
+                        {post?.description}
                     </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
                     <IconButton aria-label="add to favoritess">
+                        {post.likes.length}
+                        <p> like</p>
                         <Checkbox onClick={addLike}
-                            // {post.}
-                            // icon={
-                            // liked ? <Favorite sx={{ color: 'red' }} /> : 
-                            // <FavoriteBorder />} checkedIcon={
-                            // liked ? 
-                            // <Favorite sx={{ color: 'red' }} /> :  <FavoriteBorder /> } 
-
-                            icon={<FavoriteBorder />} checkedIcon={<Favorite sx={{ color: 'red' }} />}
-
+                            icon={!likes ? <FavoriteBorder /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'red' }} />}
                         />
                     </IconButton>
-
                     <ExpandMore
                         expand={expanded}
                         onClick={handleExpandClick}
@@ -123,44 +122,31 @@ export default function Post({ post }) {
                     >
                         <CommentOutlinedIcon />
                     </ExpandMore>
+                    {post.comments.length}
+                    comment
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <Box sx={{ maxHeight: 200, overflowY: 'scroll' }}>
                             <form onSubmit={formik.handleSubmit}>
-                                
-                                    {
-                                        post.comments.map((comment)=>{
-                                            return(
-                                                <p>{comment.comment}</p>
-                                            )
-                                        })
-                                            
-                                        
-    
-                                    }
-                                
-
-
+                                {
+                                    post.comments.map((comment) => {
+                                        return (
+                                            <p key={comment.comment} >{comment.comment}</p>
+                                        )
+                                    })
+                                }
                                 <TextField
                                     name='comment'
                                     value={formik.values.comment}
                                     onChange={formik.handleChange}
                                     fullWidth
                                     variant='standard'
-                                    // inputProps={{
-                                //     endadornment: <IconButton type='submit'>
-                                //         <SendIcon/>
-                                //     </IconButton>
-                                // }}
                                 />
                                 <Button type='submit'>Send</Button>
                             </form>
                         </Box>
-
-
                     </CardContent>
-
                 </Collapse>
 
             </Card>
