@@ -1,47 +1,72 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-const postSchema=mongoose.Schema(
+const postSchema = mongoose.Schema(
     {
-        userid:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+        userid: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
             // required:true
         },
-        description:{
-            type:String,
+        description: {
+            type: String,
             // required:true
         },
-        img:{
-            type:Array,
+        img: {
+            type: Array,
         },
-        likes:{
-            type:Array,
-            default:[],
+        likes: {
+            type: Array,
+            default: [],
         },
-        comments:[
+        comments: [
             {
-                comment:{
-                    type:String
+                comment: {
+                    type: String
                 },
-                commentBy:{
-                    type:mongoose.Schema.Types.ObjectId,
-                    ref:'User'
+                commentBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
 
                 },
-                createdAt:{
-                    type:String,
-                    default:new Date().toDateString()
+                createdAt: {
+                    type: String,
+                    default: new Date().toDateString()
                 }
             }
         ],
-        date:{
-            type:String
-        }
 
-    },
-    {
-        timestamsps:true
+        report: [
+            {
+
+                report: {
+                    type: String
+
+                },
+                reportedBy: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+
+                },
+                createdAt: {
+                    type: String,
+                    default: new Date().toDateString()
+                },
+            }
+        ],
+
+        date: {
+            type: String
+        },
+
+    
+    
+        reportedStatus: {
+            type: Boolean,
+            default: false,
+
+        },
     }
+
 );
 
-module.exports=mongoose.model("Post",postSchema)
+module.exports = mongoose.model("Post", postSchema)

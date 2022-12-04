@@ -14,8 +14,6 @@ export default function Admin() {
         },
         onSubmit: values => {
             axios.post(`${process.env.REACT_APP_BACKEND_URL}/authorizer/login`, values).then(({data}) => {
-                // console.log(JSON.stringify(data));
-                console.log(data.token,'dataaaa');
                 localStorage.setItem('admin',data.token)
                 if (data.token) {
                     navigate('/authorizer/home')

@@ -23,10 +23,10 @@ function UserCard({data,follow}) {
     //     unfollow(data._id)
     // }
   return (
-    <div style={{ width: "10vw", display: "flex", paddingTop: 25, paddingLeft: 30, gap: 12 }}>
-    <div style={{ border: "1px solid black" }}>
-        <img style={{ width: "10vw" }} src='icons/nishad.jpeg' />
-        <div>
+    <div style={{ width: "10vw", display: "flex",alignItems:"center",flexDirection:"center" ,paddingTop: 25, paddingLeft: 30, gap: 12 }}>
+    <div style={{ border: "0px solid black",display: "flex",alignItems:"center",flexDirection:"column",boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2) 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
+        <img style={{ width: "10vw",borderRadius:20 }} src='icons/nishad.jpeg' />
+        <div style={{marginTop:10}}>
 
             {
                 data.user_name
@@ -34,7 +34,7 @@ function UserCard({data,follow}) {
         </div>
         {
             follow ? 
-            <Button style={{alignItems:"center"}} onClick={()=>follow(data._id)} variant="contained" >Follow</Button>
+            <Button style={{display:"flex",paddingTop:10}} onClick={()=>follow(data._id)} variant="contained" >Follow</Button>
             :
             <Button onClick={()=>unfollowUser(data._id)}variant="contained" >Unfollow</Button>
 

@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 function Posts() {
   const [{ posts }, dispatch] = useReducer(postsReducer, { posts: [] })
   const {user} = useSelector(state => ({ ...state }))
+  console.log(user,'userid');
   const refresh = useSelector((state)=> state.user.refresh)
   useEffect(() => {
     const token = user?.token

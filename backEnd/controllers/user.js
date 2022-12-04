@@ -380,7 +380,9 @@ exports.userSearch = async (req, res) => {
 exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
+        console.log(userid,'userid');
         const post = await Post.find().populate("userid", "first_name last_name user_name")
+        // console.log(post);
         res.json(post)
 
     } catch (error) {
@@ -396,8 +398,8 @@ exports.getUserProfile = async (req, res) => {
         console.log(userid);
         const user = await User.findById(userid)
         const post = await Post.find({ userid: userid })
-        console.log(post, 'post');
-        console.log(user, 'userr');
+        console.log(post, 'posttttt');
+        // console.log(user, 'userr');
         res.json({ post, user })
 
     } catch (error) {
@@ -416,6 +418,7 @@ exports.follow = async (req, res) => {
         if (!user.followers.includes(userid)) {
             await user.updateOne({ $push: { followers: userid } });
             await currentUser.updateOne({ $push: { following: followingId } })
+
             res.status(200).json("followed the user")
         } else {
             res.status(200).json("you alredy follow")
@@ -452,7 +455,6 @@ exports.getAllFollowers = async (req, res) => {
 
 exports.unfollow = async (req, res) => {
     try {
-        console.log('hi');
         const followingId = mongoose.Types.ObjectId(req.body.userid)
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(followingId)
@@ -462,13 +464,52 @@ exports.unfollow = async (req, res) => {
             await user.updateOne({ $pull: { following: followingId } });
             res.status(200).json("Unfollowed the user")
 
-        }else{
+        } else {
             res.status(400).json("you dont follow this user")
         }
     } catch (error) {
         console.log(error);
 
     }
+}
+exports.reportPost = async (req, res) => {
+    try {
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const postId = mongoose.Types.ObjectId(req.body.postid)
+        const post = await Post.findById(postId)
+        console.log(userid,'user');
+        const reportData={
+            // report:req.body.value,
+            reportedBy:userid
+        }
+
+        if (!post.report.some((report)=> report.reportedBy+'' == userid)) {
+            await post.updateOne({ $push: { report: reportData } })
+            await post.updateOne({$set:{reportedStatus:true}})
+            res.status(200).json("Your report has been submitted successfully")
+        } else {
+            res.status(200).json("Alredy reported the post")
+        }
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+exports.getPeopleMayKnow= async (req,res)=>{
+    console.log('hi');
+    try {
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const user=await User.findById(userid)
+        const peoples=await User.find({_id:{$nin:user.following}})
+        console.log(peoples,'people');
+        
+
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+
 }
 
 

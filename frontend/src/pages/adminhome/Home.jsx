@@ -3,6 +3,7 @@ import React from 'react'
 import AdminFeed from '../../components/AdminFeed/AdminFeed'
 import AdminSidebar from '../../components/AdminSidebar/AdminSidebar'
 import AdminTopbar from '../../components/AdminTopbar/AdminTopbar'
+import ReportedPosts from '../ReportedPosts/ReportedPosts'
 
 export default function Adminhome() {
   return (

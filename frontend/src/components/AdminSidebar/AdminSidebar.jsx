@@ -33,7 +33,7 @@ export default function AdminSidebar() {
           </ListItemButton>
         </ListItem>
         <ListItem >
-          <ListItemButton component='a' href='#'>
+          <ListItemButton component='a' href='/authorizer/reportedPosts'>
             <ListItemIcon>
             <ReportProblemOutlinedIcon/>
             </ListItemIcon>

@@ -8,6 +8,7 @@ import NotLoggedInRoutes from "./routes/NotLoggedInRoutes";
 import UserHome from "./components/userhome/UserHome";
 import ProfilePage from "./pages/profile";
 import Community from "./pages/community/Community";
+import ReportedPosts from "./pages/ReportedPosts/ReportedPosts";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         {/* <Route element={<NotLoggedInRoutes />}> */}
           <Route path="/login" element={<Login />} exact />
           <Route path="/authorizer" element={<Admin />} exact />
+          <Route path="/authorizer/reportedPosts" element={<ReportedPosts />} exact />
           <Route path="/authorizer/home" element={<Adminhome />} exact />
         {/* </Route> */}
       </Routes>

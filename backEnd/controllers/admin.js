@@ -3,6 +3,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const { generateToken } = require('../helpers/adminJwt')
 const { default: mongoose } = require("mongoose");
+const { post } = require('../routes/authorizer');
+const Post = require('../models/Post')
 exports.addAdmin = async (req, res) => {
    try {
       const { email, password } = req.body;
@@ -78,5 +80,21 @@ exports.userManagement = async (req, res) => {
       console.log(error);
       res.status(500).json(error)
 
+   }
+}
+
+//get reportedPosts
+
+exports.reportedPosts= async (req,res)=>{
+   try {
+      const post=await Post.find({reportedStatus:true},{img:1,report:1}).populate('report.reportedBy').populate('userid')
+   
+      console.log(post);
+      res.json(post)
+   
+      
+   } catch (error) {
+      console.log(error);
+      
    }
 }

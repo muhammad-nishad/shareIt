@@ -67,6 +67,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    // FollowActive:{
+    //   type:Boolean,
+    //   default:true
+    // },
     // friends: {
     //   type: Array,
     //   default: [],

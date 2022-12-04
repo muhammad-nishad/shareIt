@@ -1,4 +1,4 @@
-import { Box, Card, Typography, CardMedia, CardContent, CardActions, Avatar, IconButton, CardHeader, Checkbox, Collapse, styled, TextField, Button, Modal } from '@mui/material';
+import { Box, Card, Typography, CardMedia, CardContent, CardActions, Avatar, IconButton, CardHeader, Checkbox, Collapse, styled, TextField, Button, Modal, Menu, MenuItem, Fade } from '@mui/material';
 // import ShareIcon from '@mui/icons-material/Share';
 import { Favorite, FavoriteBorder, MoreVert } from '@mui/icons-material';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
@@ -28,8 +28,20 @@ const ExpandMore = styled((props) => {
 export default function Post({ post }) {
     const { user } = useSelector(state => ({ ...state }))
     const [likes, setLikes] = useState(false)
-    const [showMenu,setShowMenu]=useState(false)
+    const [showMenu, setShowMenu] = useState(false)
     const dispatch = useDispatch()
+    //menu
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+
+
 
     useEffect(() => {
         post.likes.map((likes) => {
@@ -47,10 +59,9 @@ export default function Post({ post }) {
 
     let userToken = Cookies.get('user')
     userToken = JSON.parse(userToken)
-
     const addLike = () => {
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/likePost`, { postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
-            dispatch({type:'REFRESH'})
+            dispatch({ type: 'REFRESH' })
         })
 
     }
@@ -60,12 +71,17 @@ export default function Post({ post }) {
         },
         onSubmit: (values, { resetForm }) => {
             axios.post(`${process.env.REACT_APP_BACKEND_URL}/addcomment`, { values, postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
-                dispatch({type:'REFRESH'})
+                dispatch({ type: 'REFRESH' })
                 resetForm({ values: '' })
             })
         }
 
     })
+    const reportPost = () => {
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/reportPost`, { postid: post._id }, { headers: { token: userToken.token } }).then((response) => {
+        })
+
+    }
     return (
         <>
             <Card sx={{ margin: 3 }}>
@@ -76,22 +92,37 @@ export default function Post({ post }) {
                         </Avatar>
                     }
                     action={
-                        <IconButton onClick={() => {
-                            setShowMenu(true)
-                            
-
-                            console.log('report');
-                            <Modal keepMounted />
-
-                        }} aria-label="settings">
-                            <MoreVert />
+                        <IconButton aria-label="settings">
+                            <MoreVert onClick={handleClick} />
 
                         </IconButton>
                     }
                     title={post.userid.first_name}
-                    
+
                     subheader="5 minutes ago"
                 />
+                <Menu
+                    id="fade-menu"
+                    MenuListProps={{
+                        'aria-labelledby': 'fade-button',
+                    }}
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    TransitionComponent={Fade}
+
+                >
+
+                    {user.user._id === post.userid._id ?
+                        <MenuItem onClick={reportPost}>
+                            Delete Post</MenuItem>
+                        :
+
+                        <MenuItem onClick={reportPost}>
+                            Report Post</MenuItem>
+                    }
+                </Menu>
+
                 {
                     post.img.map((img) => (<CardMedia
                         component="img"
@@ -148,7 +179,6 @@ export default function Post({ post }) {
                         </Box>
                     </CardContent>
                 </Collapse>
-
             </Card>
         </>
     )

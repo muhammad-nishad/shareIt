@@ -1,5 +1,7 @@
 const express=require('express');
-const {register,login,follow,unfollow,posts,updatePost,deletePost,likePost,verifyotp,userSearch,getUserPost,addComment,getUserProfile,getAllFollowing,getAllFollowers}=require('../controllers/user')
+const {register,login,follow,unfollow,posts,updatePost,deletePost,likePost,
+    verifyotp,userSearch,getUserPost,addComment,getUserProfile,getAllFollowing,
+    getAllFollowers,reportPost,getPeopleMayKnow}=require('../controllers/user')
 const router=express.Router()
 const verifyToken=require('../middlewares/authMiddleware')
 
@@ -18,6 +20,8 @@ router.post('/addcomment',verifyToken,addComment)
 router.get('/getUserProfile',verifyToken,getUserProfile)
 router.get('/getallFollowing',verifyToken,getAllFollowing)
 router.get('/getallFollowers',verifyToken,getAllFollowers)
+router.post('/reportPost',verifyToken,reportPost)
+router.get('/getPeopleMayKnow',verifyToken,getPeopleMayKnow)
 
 
 module.exports=router;

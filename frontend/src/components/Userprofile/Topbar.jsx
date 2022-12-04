@@ -16,12 +16,12 @@ export default function Topbar() {
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile`, { headers: { token: token } }).then(({ data }) => {
+            console.log(data,'userprofile');
             setUser(data.user)
             setPosts(data.post)
 
         })
     }, [])
-    console.log(user)
     return (
         <div style={{ maxWidth: "600px", margin: "0px auto" }}>
             <div style={{
@@ -41,18 +41,9 @@ export default function Topbar() {
                         <h6>{posts && posts.length} posts</h6>
                         <h6>{user?.followers && user?.followers.length} followers</h6>
                         <h6>{user?.following && user?.following.length} following</h6>
-
                     </div>
                 </div>
             </div>
-            {/* <div className='gallery'>
-                {
-                    posts && posts.map((post) => ((<img className='item' src={post.img[0]} alt="" />)
-                    ))
-                }
-
-            </div> */}
-
         </div>
     )
 }
