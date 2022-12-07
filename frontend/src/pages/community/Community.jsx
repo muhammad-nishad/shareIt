@@ -9,8 +9,6 @@ import Followers from "../../components/Followers/Followers";
 
 export default function Community() {
     const [user, setUser] = useState([])
-
-
     const [people, setPeople] = useState(false)
     const [following, setFollowing] = useState(false)
     const [followers, setFollowers] = useState(false)

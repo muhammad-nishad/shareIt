@@ -57,15 +57,15 @@ const postSchema = mongoose.Schema(
         date: {
             type: String
         },
-
-    
-    
         reportedStatus: {
             type: Boolean,
             default: false,
 
         },
-    }
+    },
+    {
+        timestamps: true,
+      }
 
 );
 

@@ -105,10 +105,11 @@ function Navbar({ color }) {
                             setOpen(true)}
 
                     />
-                    <Typography variant='span'>Nishad</Typography>
+                    {/* <Typography variant='span'>Nishad</Typography> */}
                 </UserBox>
             </StyledToolBar>
-            <Menu
+            <Menu 
+
                 id="demo-positioned-menu"
                 aria-labelledby="demo-positioned-button"
                 open={open}

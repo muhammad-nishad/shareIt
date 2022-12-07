@@ -5,7 +5,11 @@ import { Stack } from '@mui/system'
 import './add.css'
 import axios, { Axios } from 'axios'
 import Cookies from 'js-cookie'
+import { useReducer } from "react"
+import { postsReducer } from '../../functions/reducers';
 import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+
 
 const StyledModal = styled(Modal)({
     display: 'flex',
@@ -20,7 +24,7 @@ const UserBox = styled(Box)({
     marginBottom: "20px"
 })
 
-function Add() {
+function Add({dispatch}) {
     const uploadImage = () => {
         const formData = new FormData()
         formData.append("file", imageSelected)
@@ -29,12 +33,18 @@ function Add() {
             let token1 =  Cookies.get('user')
             token1 = JSON.parse(token1)
             const {token } = token1
-            console.log(token,'tokennn');
             axios.post("https://api.cloudinary.com/v1_1/dl0nkbe8b/image/upload", formData).then((response) => {
                 const img = response.data.url
-                return axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, { img,description }, { headers: { token: token } }).then((response) => {
+                 axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, { img,description }, { headers: { token: token } }).then(({data}) => {
+                    console.log(data,'responseof post addd');
+                    dispatch({
+                        type: "NEW_POST",
+                        payload: data
+                      })
+                      setOpen(false)
                 })
             })
+
 
         } catch (error) {
             console.log(error, 'errrrrrr');
@@ -43,7 +53,12 @@ function Add() {
 
     };
     const { user } = useSelector(state => ({ ...state }))
-    // console.log(user?.user?.first_name)
+    const value=useSelector((state)=>{
+        return state;
+
+    })
+    console.log(value,'value from useSelector');
+    console.log(user?.user?.first_name)
     const [open, setOpen] = useState(false)
     const [imageSelected, setImageSelected] = useState()
     const [description,setDescription]=useState()

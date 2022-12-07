@@ -78,7 +78,6 @@ const saveUserData = async (userData) => {
     //     bDay
     // })
     // user.save()
-    console.log(user, 'datauserrrrrr');
     return user;
 }
 
@@ -125,8 +124,6 @@ exports.register = async (req, res) => {
         const cryptedPassword = await bcrypt.hash(password, 12)
         let tempUsername = first_name + last_name;
         let newUsername = await validateUsername(tempUsername);
-        console.log(cryptedPassword, 'pass');
-        console.log(newUsername, 'newnameeee');
         const user = await new User({
             first_name,
             last_name,
@@ -140,7 +137,6 @@ exports.register = async (req, res) => {
         })
         user.save()
         const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
-        console.log(emailVerification, 'tokennn');
         res.json({ token: emailVerification })
         // req.session.tempUserData = req.body;
         // console.log(req.session,'sessionnnn');
@@ -212,7 +208,8 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: "invalid user" })
         }
         const emailVerification = generateToken({ id: user._id, email: user.email.toString(), }, "30m")
-        res.json({ token: emailVerification, user: user })
+
+        res.json({ user: { ...user.toObject(), token: emailVerification } })
     } catch (error) {
         res.status(600).json({ message: error.message })
 
@@ -266,18 +263,16 @@ exports.login = async (req, res) => {
 //create a post
 exports.posts = async (req, res) => {
     const userid = req.user.id
-    console.log(req.body, 'req.bodyyy');
     mongoose.Types.ObjectId(userid)
-    console.log(typeof (userid));
     const newPost = new Post({
         img: req.body.img,
         description: req.body.description,
         userid
     });
     try {
-        const savedPost = await newPost.save();
-        res.status(200).json("New post created successfully")
-
+        const savedPost = await newPost.save()
+        const post  = await savedPost.populate("userid","first_name last_name user_name")
+        res.status(200).json(post)
     } catch (error) {
         res.status(500).json(error)
     }
@@ -320,14 +315,11 @@ exports.likePost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const postid = mongoose.Types.ObjectId(req.body.postid)
-        console.log(postid, 'postt');
         const post = await Post.findById(postid);
         if (!post.likes.includes(userid)) {
-            console.log('like', post);
             await Post.updateOne({ _id: postid }, { $push: { likes: userid } });
             res.status(200).json("You liked the post")
         } else {
-            console.log('dislike');
             await Post.updateOne({ _id: postid }, { $pull: { likes: userid } });
             res.status(200).json("The post has been disliked ")
         }
@@ -370,36 +362,30 @@ exports.addComment = async (req, res) => {
 
 exports.userSearch = async (req, res) => {
     const searchResult = await User.find({ first_name: new RegExp('^' + req.params.data, 'i') })
-
     if (searchResult) {
         res.send(searchResult)
     } else {
         res.status(400).json({ message: "no user found" })
     }
 }
+
 exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        console.log(userid,'userid');
-        const post = await Post.find().populate("userid", "first_name last_name user_name")
-        // console.log(post);
+        const post = await Post.find().populate("userid", "first_name last_name user_name").sort({ createdAt: -1 })
         res.json(post)
-
     } catch (error) {
         console.log(error);
 
     }
-
-
 }
+
+
 exports.getUserProfile = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        console.log(userid);
         const user = await User.findById(userid)
-        const post = await Post.find({ userid: userid })
-        console.log(post, 'posttttt');
-        // console.log(user, 'userr');
+        const post = await Post.find({ userid: userid }).sort({createdAt:-1})
         res.json({ post, user })
 
     } catch (error) {
@@ -410,7 +396,6 @@ exports.getUserProfile = async (req, res) => {
 
 exports.follow = async (req, res) => {
     try {
-        console.log(req.body.userid, 'req.body');
         const followingId = mongoose.Types.ObjectId(req.body.userid)
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(followingId)
@@ -418,12 +403,10 @@ exports.follow = async (req, res) => {
         if (!user.followers.includes(userid)) {
             await user.updateOne({ $push: { followers: userid } });
             await currentUser.updateOne({ $push: { following: followingId } })
-
             res.status(200).json("followed the user")
         } else {
             res.status(200).json("you alredy follow")
         }
-        res.json(userid)
 
     } catch (error) {
         console.log(error);
@@ -477,15 +460,14 @@ exports.reportPost = async (req, res) => {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const postId = mongoose.Types.ObjectId(req.body.postid)
         const post = await Post.findById(postId)
-        console.log(userid,'user');
-        const reportData={
+        const reportData = {
             // report:req.body.value,
-            reportedBy:userid
+            reportedBy: userid
         }
 
-        if (!post.report.some((report)=> report.reportedBy+'' == userid)) {
+        if (!post.report.some((report) => report.reportedBy + '' == userid)) {
             await post.updateOne({ $push: { report: reportData } })
-            await post.updateOne({$set:{reportedStatus:true}})
+            await post.updateOne({ $set: { reportedStatus: true } })
             res.status(200).json("Your report has been submitted successfully")
         } else {
             res.status(200).json("Alredy reported the post")
@@ -495,21 +477,33 @@ exports.reportPost = async (req, res) => {
 
     }
 }
-exports.getPeopleMayKnow= async (req,res)=>{
-    console.log('hi');
+exports.getPeopleMayKnow = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user=await User.findById(userid)
-        const peoples=await User.find({_id:{$nin:user.following}})
-        console.log(peoples,'people');
-        
-
-        
+        const user = await User.findById(userid)
+        const peoples = await User.find({ _id: { $nin: [user.following, req.user.id] } })
+        res.json(peoples)
     } catch (error) {
         console.log(error);
-        
     }
+}
 
+exports.savePost = async (req, res) => {
+    try {
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const user = await User.findById(userid)
+        const postId = mongoose.Types.ObjectId(req.body.postid)
+        if (!user.savedPost.post.includes(postid)) {
+            await user.updateOne({ $push: { post: postId } });
+            res.status(200).json("Post Added to Saved Posts")
+        } else {
+            res.status(400).json("This post is alredy in your savedposts")
+        }
+
+    } catch (error) {
+        console.log(error);
+
+    }
 }
 
 

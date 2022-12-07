@@ -3,11 +3,11 @@ import React from 'react'
 import Posts from '../Post/Posts';
 
 
-function Feed() {
+function Feed({posts,dispatch}) {
   return (
 
     <Box flex={4} p={1}   >
-     <Posts/>
+     <Posts posts={posts} dispatch={dispatch} />
     </Box>
   )
 }

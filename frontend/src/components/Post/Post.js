@@ -1,5 +1,4 @@
 import { Box, Card, Typography, CardMedia, CardContent, CardActions, Avatar, IconButton, CardHeader, Checkbox, Collapse, styled, TextField, Button, Modal, Menu, MenuItem, Fade } from '@mui/material';
-// import ShareIcon from '@mui/icons-material/Share';
 import { Favorite, FavoriteBorder, MoreVert } from '@mui/icons-material';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import React, { useEffect, useState } from 'react';
@@ -9,6 +8,23 @@ import { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import CloseIcon from '@mui/icons-material/Close';
+import Moment from 'react-moment';
+import swal from 'sweetalert';
+
+
+const stylee = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 
 
@@ -24,8 +40,8 @@ const ExpandMore = styled((props) => {
 }));
 
 
-
 export default function Post({ post }) {
+
     const { user } = useSelector(state => ({ ...state }))
     const [likes, setLikes] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
@@ -75,13 +91,17 @@ export default function Post({ post }) {
                 resetForm({ values: '' })
             })
         }
-
     })
     const reportPost = () => {
+        console.log('function called');
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/reportPost`, { postid: post._id }, { headers: { token: userToken.token } }).then((response) => {
         })
 
     }
+    const [openn, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClosee = () => setOpen(false);
+
     return (
         <>
             <Card sx={{ margin: 3 }}>
@@ -94,14 +114,73 @@ export default function Post({ post }) {
                     action={
                         <IconButton aria-label="settings">
                             <MoreVert onClick={handleClick} />
-
                         </IconButton>
                     }
-                    title={post.userid.first_name}
-
-                    subheader="5 minutes ago"
+                    title={post.userid?.first_name}
+                    subheader={<Moment fromNow interval={30}>
+                        {post.createdAt}
+                    </Moment>}
                 />
-                <Menu
+                
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={stylee}>
+                            <Typography>Report  Post</Typography>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <CloseIcon />
+
+                            </div>
+
+                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                Please select a problem
+                            </Typography>
+                            <div style={{ marginTop: "2px" }}>
+
+
+                                <Typography  >Nudity</Typography>
+                                
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <NavigateNextIcon onClick={()=>{
+                                    console.log('nudity');
+                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                    handleOpen()
+
+                                }}
+
+                                />
+
+                            </div>
+
+                            <Typography>Terrorism</Typography>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+
+                                <NavigateNextIcon onClick={() => {
+                                    reportPost()
+                                    
+                                    console.log('terrorism reported');
+                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                }} />
+                            </div>
+                            <Typography>Violence</Typography>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <NavigateNextIcon onClick={() => {
+                                    console.log('violence reported');
+                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                }} />
+                            </div>
+
+                        </Box>
+                    </Modal>
+                
+
+
+
+                {/* <Menu
                     id="fade-menu"
                     MenuListProps={{
                         'aria-labelledby': 'fade-button',
@@ -121,7 +200,7 @@ export default function Post({ post }) {
                         <MenuItem onClick={reportPost}>
                             Report Post</MenuItem>
                     }
-                </Menu>
+                </Menu> */}
 
                 {
                     post.img.map((img) => (<CardMedia
@@ -139,10 +218,15 @@ export default function Post({ post }) {
                 </CardContent>
                 <CardActions disableSpacing>
                     <IconButton aria-label="add to favoritess">
-                        {post.likes.length}
-                        <p> like</p>
+
+                        <small>
+                            {post.likes.length}
+                            likes
+                        </small>
+
+
                         <Checkbox onClick={addLike}
-                            icon={!likes ? <FavoriteBorder /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'red' }} />}
+                            icon={!likes ? <FavoriteBorder sx={{ color: 'grey' }} /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'grey' }} />}
                         />
                     </IconButton>
                     <ExpandMore

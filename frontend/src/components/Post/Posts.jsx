@@ -8,27 +8,28 @@ import { useSelector } from 'react-redux';
 
 
 
-function Posts() {
-  const [{ posts }, dispatch] = useReducer(postsReducer, { posts: [] })
-  const {user} = useSelector(state => ({ ...state }))
-  console.log(user,'userid');
-  const refresh = useSelector((state)=> state.user.refresh)
+function Posts({posts,dispatch}) {
+
+  const user = JSON.parse(Cookies.get("user"))
+  // const { user } = useSelector(state => ({ ...state }))
+  const refresh = useSelector((state) => state.user.refresh)
   useEffect(() => {
-    const token = user?.token
-    console.log({refresh});
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/getposts`, { headers: { token: token } }).then(({ data }) => {
+    console.log(user)
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/getposts`, { headers: { token: user?.token } }).then(({ data }) => {
       dispatch({
         type: "POSTS_SUCCESS",
         payload: data
       })
+      console.log("done")
     }).catch(err => {
       console.log(err, 'catch block of axios');
     })
-  }, [refresh])
+  }, [])
+  console.log(user?.email)
   return (
     <>
       {
-         posts?.map((post) => (<Post key={post._id} post={post} />))
+        posts?.map((post) => (<Post key={post._id} post={post} />))
       }
     </>
   )

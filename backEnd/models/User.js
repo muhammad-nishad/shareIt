@@ -103,18 +103,18 @@ const userSchema = mongoose.Schema(
     // details: {
     //   bio: {
     //
-    // savedPosts: [
-    //   {
-    //     post: {
-    //       type: ObjectId,
-    //       ref: "Post",
-    //     },
-    //     savedAt: {
-    //       type: Date,
-    //       default: new Date(),
-    //     },
-    //   },
-    // ],
+    savedPosts: [
+      {
+        post: {
+          type: ObjectId,
+          ref: "Post",
+        },
+        savedAt: {
+          type: Date,
+          default: new Date(),
+        },
+      },
+    ],
   },
   {
     timestamps: true,

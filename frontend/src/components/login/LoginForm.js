@@ -16,7 +16,6 @@ const loginInfos = {
 export default function LoginForm({ setVisible }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [login, setLogin] = useState(loginInfos);
   const { email, password } = login;
   const handleLoginChange = (e) => {
@@ -39,8 +38,8 @@ export default function LoginForm({ setVisible }) {
         email,
         password,
       })
-      Cookies.set("user", JSON.stringify(data))
-      dispatch({ type: "LOGIN", payload: JSON.stringify(data?.user) });
+      Cookies.set("user", JSON.stringify(data.user))
+      dispatch({ type: "LOGIN", payload: JSON.stringify(data.user) });
       navigate("/")
 
     } catch (error) {
@@ -52,7 +51,7 @@ export default function LoginForm({ setVisible }) {
   return (
     <div className="login_wrap">
       <div className="login_1">
-        <img src="../../icons/ShareIt.png" alt="shareIt" />
+        <img src="../../icons/ShareIt.png" alt="shareIt" style={{maxWidth:"16rem"}} />
         <span>
           Share It helps you connect and share with the people in your life.
         </span>
