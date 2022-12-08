@@ -271,7 +271,7 @@ exports.posts = async (req, res) => {
     });
     try {
         const savedPost = await newPost.save()
-        const post  = await savedPost.populate("userid","first_name last_name user_name")
+        const post = await savedPost.populate("userid", "first_name last_name user_name")
         res.status(200).json(post)
     } catch (error) {
         res.status(500).json(error)
@@ -385,7 +385,7 @@ exports.getUserProfile = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
-        const post = await Post.find({ userid: userid }).sort({createdAt:-1})
+        const post = await Post.find({ userid: userid }).sort({ createdAt: -1 })
         res.json({ post, user })
 
     } catch (error) {
@@ -492,17 +492,42 @@ exports.savePost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
+        console.log(user, 'user');
         const postId = mongoose.Types.ObjectId(req.body.postid)
-        if (!user.savedPost.post.includes(postid)) {
-            await user.updateOne({ $push: { post: postId } });
+        console.log(postId, 'postid');
+        if (!user.savedPosts.some((savedPosts) => savedPosts.post + '' == postId)) {
+            await user.updateOne
+                ({
+                    $push: {
+                        savedPosts: {
+                            post: postId
+
+                        }
+
+                    }
+                });
             res.status(200).json("Post Added to Saved Posts")
         } else {
-            res.status(400).json("This post is alredy in your savedposts")
+            res.status(201).json("This post is alredy in your savedposts")
         }
 
     } catch (error) {
         console.log(error);
 
+    }
+}
+exports.getSavedPosts=async (req,res)=>{
+    console.log('here');
+    try {
+        console.log('hi');
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const user=await User.findById(userid).populate('savedPosts.post')
+        console.log(user,'user');
+        res.status(200).json(user)
+        
+    } catch (error) {
+        console.log(error);
+        
     }
 }
 

@@ -6,6 +6,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import Diversity2OutlinedIcon from '@mui/icons-material/Diversity2Outlined';
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import Save from '@mui/icons-material/TurnedInNotOutlined';
 
 function Sidebar() {
   const navigate = useNavigate()
@@ -55,6 +56,17 @@ function Sidebar() {
               <ListItemText primary="Chats" />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton component='a' onClick={(e)=>{
+              e.preventDefault()
+              navigate("/savedPosts")
+            }}>
+              <ListItemIcon>
+                <Save />
+              </ListItemIcon>
+              <ListItemText primary="Saved Posts" />
+            </ListItemButton>
+          </ListItem>
 
           <ListItem disablePadding>
             <ListItemButton component='a' href='#'>
@@ -64,10 +76,6 @@ function Sidebar() {
               <ListItemText primary="Notifications" />
             </ListItemButton>
           </ListItem>
-
-
-
-
         </List>
       </Box>
     </Box>

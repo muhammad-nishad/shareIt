@@ -1,7 +1,7 @@
 const express=require('express');
 const {register,login,follow,unfollow,posts,updatePost,deletePost,likePost,
     verifyotp,userSearch,getUserPost,addComment,getUserProfile,getAllFollowing,
-    getAllFollowers,reportPost,getPeopleMayKnow,savePost}=require('../controllers/user')
+    getAllFollowers,reportPost,getPeopleMayKnow,savePost,getSavedPosts}=require('../controllers/user')
 const router=express.Router()
 const verifyToken=require('../middlewares/authMiddleware')
 
@@ -23,6 +23,7 @@ router.get('/getallFollowers',verifyToken,getAllFollowers)
 router.post('/reportPost',verifyToken,reportPost)
 router.get('/getPeopleMayKnow',verifyToken,getPeopleMayKnow)
 router.post('/savedPost',verifyToken,savePost)
+router.get('/getallSavedPosts',verifyToken,getSavedPosts)
 
 
 module.exports=router;

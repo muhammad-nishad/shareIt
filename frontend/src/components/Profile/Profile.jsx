@@ -15,8 +15,8 @@ export default function Profile() {
   const refresh = useSelector((state)=> state.user.refresh)
   useEffect(() => {
     const token = user?.token
+    console.log(user,'getpost userprofile');
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile`, { headers: { token: token } }).then(({ data }) => {
-      console.log(data,'getpost');
       // setPosts(data.post)
       dispatch({
         type: "POSTS_SUCCESS",
@@ -36,8 +36,8 @@ export default function Profile() {
     <div style={{maxWidth:"50%"}} >
 
     {
-      posts &&
-      posts.map((post) => (<Post key={post._id} post={post} />))
+     
+      posts?.map((post) => (<Post key={post._id} post={post} />))
     }
     {/* {
       posts._id

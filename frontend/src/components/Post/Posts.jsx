@@ -29,7 +29,7 @@ function Posts({posts,dispatch}) {
   return (
     <>
       {
-        posts?.map((post) => (<Post key={post._id} post={post} />))
+        posts?.map((post) => (<Post  key={post._id} post={post} />))
       }
     </>
   )

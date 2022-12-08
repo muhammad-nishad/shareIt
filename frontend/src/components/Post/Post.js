@@ -12,6 +12,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import CloseIcon from '@mui/icons-material/Close';
 import Moment from 'react-moment';
 import swal from 'sweetalert';
+import Save from '@mui/icons-material/TurnedInNotOutlined';
 
 
 const stylee = {
@@ -41,7 +42,6 @@ const ExpandMore = styled((props) => {
 
 
 export default function Post({ post }) {
-
     const { user } = useSelector(state => ({ ...state }))
     const [likes, setLikes] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
@@ -76,6 +76,8 @@ export default function Post({ post }) {
     let userToken = Cookies.get('user')
     userToken = JSON.parse(userToken)
     const addLike = () => {
+        console.log('like function');
+        setLikes(true)
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/likePost`, { postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
             dispatch({ type: 'REFRESH' })
         })
@@ -93,10 +95,16 @@ export default function Post({ post }) {
         }
     })
     const reportPost = () => {
-        console.log('function called');
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/reportPost`, { postid: post._id }, { headers: { token: userToken.token } }).then((response) => {
+            console.log(response, 'report');
         })
 
+    }
+
+    const savePost = () => {
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/savedPost`, { postid: post._id, }, { headers: { token: userToken.token } }).then((response) => {
+            console.log(response, 'response');
+        })
     }
     const [openn, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -104,7 +112,7 @@ export default function Post({ post }) {
 
     return (
         <>
-            <Card sx={{ margin: 3 }}>
+            <Card sx={{ marginY: "25px" }}>
                 <CardHeader
                     avatar={
                         <Avatar sx={{ bgcolor: 'black' }} aria-label="recipe">
@@ -121,62 +129,70 @@ export default function Post({ post }) {
                         {post.createdAt}
                     </Moment>}
                 />
+                {/* {
+                    user.user._id===post.userid._id ?
+                    <MenuItem onClick={reportPost}>
+                    Delete Post</MenuItem>
+                    : */}
+
                 
-                    <Modal
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                    >
-                        <Box sx={stylee}>
-                            <Typography>Report  Post</Typography>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                                <CloseIcon />
 
-                            </div>
+                <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={stylee}>
+                        <Typography>Report  Post</Typography>
+                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                            <CloseIcon />
 
-                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                Please select a problem
-                            </Typography>
-                            <div style={{ marginTop: "2px" }}>
+                        </div>
+
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            Please select a problem
+                        </Typography>
+                        <div style={{ marginTop: "2px" }}>
 
 
-                                <Typography  >Nudity</Typography>
-                                
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                                <NavigateNextIcon onClick={()=>{
-                                    console.log('nudity');
-                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
-                                    handleOpen()
+                            <Typography  >Nudity</Typography>
 
-                                }}
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                            <NavigateNextIcon onClick={() => {
+                                console.log('nudity');
+                                swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                handleOpen()
 
-                                />
+                            }}
 
-                            </div>
+                            />
 
-                            <Typography>Terrorism</Typography>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                        </div>
 
-                                <NavigateNextIcon onClick={() => {
-                                    reportPost()
-                                    
-                                    console.log('terrorism reported');
-                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
-                                }} />
-                            </div>
-                            <Typography>Violence</Typography>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                                <NavigateNextIcon onClick={() => {
-                                    console.log('violence reported');
-                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
-                                }} />
-                            </div>
+                        <Typography>Terrorism</Typography>
+                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
 
-                        </Box>
-                    </Modal>
-                
+                            <NavigateNextIcon onClick={() => {
+                                reportPost()
+
+                                console.log('terrorism reported');
+                                swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                            }} />
+                        </div>
+                        <Typography>Violence</Typography>
+                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                            <NavigateNextIcon onClick={() => {
+                                console.log('violence reported');
+                                swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                            }} />
+                        </div>
+
+                    </Box>
+                </Modal>
+
+
 
 
 
@@ -205,8 +221,8 @@ export default function Post({ post }) {
                 {
                     post.img.map((img) => (<CardMedia
                         component="img"
-                        height={300}
-                        width={50}
+                        height={"400"}
+                        // width={1000}
                         image={img}
                         alt="A"
                     />))
@@ -216,54 +232,84 @@ export default function Post({ post }) {
                         {post?.description}
                     </Typography>
                 </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton aria-label="add to favoritess">
-
-                        <small>
-                            {post.likes.length}
-                            likes
-                        </small>
+                <div style={{ display: 'flex', justifyContent:"space-between" }}>
+                    <span style={{display:"flex",justifyContent:"space-around"}} >
 
 
+                    {post.likes.length}
+                    likes
+                    </span>
+                    <span>
+
+                {/* </div> */}
+                {/* <div style={{ display: 'flex', justifyContent:"end" }}> */}
+
+               
+            
+                    {post.comments.length}
+                    comments
+                    </span>
+                </div>
+
+                <hr />
+
+                <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-around" }}>
+                    <IconButton aria-label="add to favoritess" size='small'>
                         <Checkbox onClick={addLike}
-                            icon={!likes ? <FavoriteBorder sx={{ color: 'grey' }} /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'grey' }} />}
+                            icon={!likes ? <FavoriteBorder sx={{ color: 'grey' }} /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'white' }} />}
                         />
+                        
                     </IconButton>
+                    
+
                     <ExpandMore
                         expand={expanded}
                         onClick={handleExpandClick}
                         aria-expanded={expanded}
                         aria-label="show more"
                     >
-                        <CommentOutlinedIcon />
+                    <CommentOutlinedIcon />
                     </ExpandMore>
-                    {post.comments.length}
-                    comment
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent>
-                        <Box sx={{ maxHeight: 200, overflowY: 'scroll' }}>
-                            <form onSubmit={formik.handleSubmit}>
-                                {
-                                    post.comments.map((comment) => {
-                                        return (
-                                            <p key={comment.comment} >{comment.comment}</p>
-                                        )
-                                    })
-                                }
-                                <TextField
-                                    name='comment'
-                                    value={formik.values.comment}
-                                    onChange={formik.handleChange}
-                                    fullWidth
-                                    variant='standard'
-                                />
-                                <Button type='submit'>Send</Button>
-                            </form>
-                        </Box>
-                    </CardContent>
-                </Collapse>
-            </Card>
+                    
+                
+
+                
+                <Save onClick={() => {
+                    savePost()
+                    swal(" Your  item is saved !", " to your saved posts . !", "success");
+                }}
+
+
+
+
+                />
+
+
+            </CardActions>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardContent>
+                    <Box sx={{ maxHeight: 200, overflowY: 'scroll' }}>
+                        <form onSubmit={formik.handleSubmit}>
+                            {
+                                post.comments.map((comment) => {
+                                    return (
+                                        <p key={comment.comment} >{comment.comment}</p>
+                                    )
+                                })
+                            }
+                            <TextField
+                                name='comment'
+                                value={formik.values.comment}
+                                onChange={formik.handleChange}
+                                fullWidth
+                                variant='standard'
+                            />
+                            <Button type='submit'>Send</Button>
+                        </form>
+                    </Box>
+                </CardContent>
+            </Collapse>
+        </Card>
         </>
     )
 

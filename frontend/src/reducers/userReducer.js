@@ -7,8 +7,7 @@ export function userReducer(state, action) {
         case "LOGOUT":
             return null;
         case 'REFRESH':
-            // alert('dd')
-            return { ...state, refresh: [] };
+            return { ...state, refresh:true };
 
         default:
             return { ...state }

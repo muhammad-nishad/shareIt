@@ -31,8 +31,12 @@ export default function Topbar() {
                 borderBottom: "1px solid grey"
             }}>
                 <div>
-                    <img style={{ width: "160px", height: "160px", borderRadius: '80px' }}
-                        src='icons/nishad.jpeg'
+                    <img  onClick={()=>{
+                        
+                        
+                        console.log('image clicked');
+                    }} style={{ width: "160px", height: "160px", borderRadius: '80px',cursor:'pointer' }}
+                        src='icons/blankprofile.webp'
                     />
                 </div>
                 <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", paddingRight: "120px", gap: "30px", fontWeight: 300 }}>

@@ -11,6 +11,7 @@ import community from '../../pages/community/Community'
 import Community from '../../pages/community/Community'
 import { postsReducer } from '../../functions/reducers'
 import { useEffect } from 'react'
+import SavedPosts from '../SavedPosts/SavedPosts'
 
 
 
@@ -34,7 +35,7 @@ function UserHome() {
           <Sidebar />
           {type === "home" ? <Feed posts={posts} dispatch={dispatch} />
             : type == "community" ? <Community />
-              : ""}
+              : type== "savedPosts"  ? <SavedPosts/>:""}
           <Rightbar />
         </Stack>
         <Add dispatch={dispatch} />

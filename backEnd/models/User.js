@@ -33,16 +33,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "password is required"],
     },
-    // picture: {
-    //   type: String,
-    //   trim: true,
-    //   default:
-    //     "https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png",
-    // },
-    // cover: {
-    //   type: String,
-    //   trim: true,
-    // },
+   
     gender: {
       type: String,
       // required: [true, "gender is required"],
@@ -67,14 +58,11 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // FollowActive:{
-    //   type:Boolean,
-    //   default:true
-    // },
-    // friends: {
-    //   type: Array,
-    //   default: [],
-    // },
+    profilePicture:{
+      type:String
+
+    },
+   
     following: {
       type: Array,
       ref:"User",
@@ -85,24 +73,8 @@ const userSchema = mongoose.Schema(
       ref:"User",
       default: [],
     },
-    // verified:{
-    //   Boolean
-    // }
-    // requests: {
-    //   type: Array,
-    //   default: [],
-    // },
-    // search: [
-    //   {
-    //     user: {
-    //       type: ObjectId,
-    //       ref: "User",
-    //     },
-    //   },
-    // ],
-    // details: {
-    //   bio: {
-    //
+  
+   
     savedPosts: [
       {
         post: {
