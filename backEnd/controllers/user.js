@@ -517,13 +517,29 @@ exports.savePost = async (req, res) => {
     }
 }
 exports.getSavedPosts=async (req,res)=>{
-    console.log('here');
     try {
-        console.log('hi');
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user=await User.findById(userid).populate('savedPosts.post')
         console.log(user,'user');
         res.status(200).json(user)
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+exports.addProfilePicture=async(req,res)=>{
+    try {
+        console.log(req.body,'body');
+        const image=req.body.img
+        const userid = mongoose.Types.ObjectId(req.user.id)
+        const user=await User.findById(userid)
+        await user.updateOne({$set:
+            {
+            profilePicture:image
+        }})
+        res.status(200).json("image added succesfully")
+
         
     } catch (error) {
         console.log(error);

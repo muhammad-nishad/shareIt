@@ -39,6 +39,9 @@ function UserHome() {
           <Rightbar />
         </Stack>
         <Add dispatch={dispatch} />
+        {
+          false && <h1>iam a alert</h1>
+        }
 
       </Box>
     </ThemeProvider>

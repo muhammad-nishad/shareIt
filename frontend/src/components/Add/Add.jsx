@@ -57,7 +57,6 @@ function Add({dispatch}) {
         return state;
 
     })
-    console.log(value,'value from useSelector');
     console.log(user?.user?.first_name)
     const [open, setOpen] = useState(false)
     const [imageSelected, setImageSelected] = useState()

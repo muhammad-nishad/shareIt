@@ -26,7 +26,7 @@ export default function SavedPosts() {
 
     { 
     post &&
-    post.map((post)=> (<Post post={post.post}  />))  
+    post.map((post)=> (<Post post={post.post} savedPost  />))  
     
   }
   </Box>
