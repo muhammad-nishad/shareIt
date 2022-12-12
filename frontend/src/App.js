@@ -9,6 +9,7 @@ import UserHome from "./components/userhome/UserHome";
 import ProfilePage from "./pages/profile";
 import Community from "./pages/community/Community";
 import ReportedPosts from "./pages/ReportedPosts/ReportedPosts";
+import Chat from "./pages/Chat/Chat";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route  path="/" element={<UserHome />} exact />
           <Route path="/:type" element={<UserHome />} exact />
           <Route path="/profile" element={<ProfilePage />} exact />
+          <Route path='/chat' element={<Chat/>} exact/>
         {/* </Route> */}
         {/* <Route element={<NotLoggedInRoutes />}> */}
           <Route path="/login" element={<Login />} exact />

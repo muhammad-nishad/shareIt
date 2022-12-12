@@ -546,5 +546,22 @@ exports.addProfilePicture=async(req,res)=>{
         
     }
 }
+exports.getUser=async(req,res)=>{
+    const id=req.params.userId
+    console.log(id,'para');
+    try {
+
+        const user=await User.findById(id)
+        if(user){
+            res.status(200).json(user)
+        }else{
+            res.status(500).json("No such User")
+        }
+        
+    } catch (error) {
+        res.status(500).json(error)
+        
+    }
+}
 
 
