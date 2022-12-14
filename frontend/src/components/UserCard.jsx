@@ -17,11 +17,19 @@ function UserCard({ data }) {
             console.log(response);
         })
     }
-    const followuser = async (id) => {
+    const getAllFollowing = async (id) => {
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/getallFollowing`, { headers: { token: token } }).then((response) => {
             console.log(response.data, 'response');
             setUsers(response.data)
         })
+    }
+
+    const followuser=async(id)=>{
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/follow`, { userid: id }, { headers: { token: token } }).then((response) => {
+            console.log(response,'response');
+            // setFollow(true)
+        })
+
     }
    
 

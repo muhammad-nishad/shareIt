@@ -12,27 +12,20 @@ export default function Community() {
     const [people, setPeople] = useState(false)
     const [following, setFollowing] = useState(false)
     const [followers, setFollowers] = useState(false)
-
-
     return (
         <>
             <div >
                 <div style={{ width: "55vw", paddingTop: 25, display: "flex", justifyContent: "center", gap: 10 }}>
-
                     <Button onClick={() => {
                         setFollowers((prev) =>
                             !prev
-
                         )
-
                     }} variant="contained" >Followers</Button>
-
                     <Button onClick={() => {
                         setFollowing((prev) =>
                             !prev
                         )
                     }} variant="contained">Following</Button>
-
                     <Button onClick={() => {
                         setPeople((prev) =>
                             !prev
@@ -43,13 +36,11 @@ export default function Community() {
                     {people && <People />}
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-around" }}>
-
                     {following && <Following following={following} />}
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-around" }}>
                     {followers && <Followers followers={followers} />}
                 </div>
-
             </div>
             {/* <Box flex={4} >
                 <Tabs

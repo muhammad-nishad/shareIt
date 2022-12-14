@@ -13,6 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Moment from 'react-moment';
 import swal from 'sweetalert';
 import Save from '@mui/icons-material/TurnedInNotOutlined';
+import BookmarkOutlinedIcon from '@mui/icons-material/BookmarkOutlined';
 
 
 const stylee = {
@@ -41,10 +42,10 @@ const ExpandMore = styled((props) => {
 }));
 
 
-export default function Post({ post,savedPost }) {
+export default function Post({ post, savedPost }) {
     const { user } = useSelector(state => ({ ...state }))
-    // console.log(user);
     const [likes, setLikes] = useState(false)
+    const [save,setSave]=useState(false)
     const [showMenu, setShowMenu] = useState(false)
     const dispatch = useDispatch()
     //menu
@@ -61,12 +62,18 @@ export default function Post({ post,savedPost }) {
 
 
     useEffect(() => {
-        post.likes.map((likes) => {
-            if (likes._id === user.id) {
-                setLikes(true)
-            }
-        })
-    }, [])
+        // post.likes.map((likes) => {
+        //     if (likes._id === user.id) {
+        //         setLikes(true)
+        //     }
+        // })
+        console.log({userid : post.likes});
+        if(post?.likes.includes(user?._id)){
+            setLikes(true)
+        }else{
+            setLikes(false)
+        }
+    }, [post])
     //useselector
 
     const [expanded, setExpanded] = useState(false);
@@ -78,8 +85,8 @@ export default function Post({ post,savedPost }) {
     userToken = JSON.parse(userToken)
     const addLike = () => {
         console.log('like function');
-        setLikes(true)
-        axios.post(`${process.env.REACT_APP_BACKEND_URL}/likePost`, { postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/likePost`, { postid: post._id }, { headers: { token: userToken.token } }).then((data) => {
+            setLikes(true)
             dispatch({ type: 'REFRESH' })
         })
 
@@ -103,17 +110,19 @@ export default function Post({ post,savedPost }) {
     }
 
     const savePost = () => {
+        setSave(true)
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/savedPost`, { postid: post._id, }, { headers: { token: userToken.token } }).then((response) => {
-            console.log(response, 'response');
+            dispatch({ type: 'REFRESH' })
+            console.log(response, 'save');
         })
     }
     const [openn, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClosee = () => setOpen(false);
-    if(savedPost) console.log(post)
+    if (savedPost) console.log(post)
     return (
         <>
-            <Card sx={{ marginY: "25px" }}>
+            <Card sx={{ marginY: "25px",maxWidth:"30rem" }}>
                 <CardHeader
                     avatar={
                         <Avatar sx={{ bgcolor: 'black' }} aria-label="recipe">
@@ -125,7 +134,7 @@ export default function Post({ post,savedPost }) {
                             <MoreVert onClick={handleClick} />
                         </IconButton>
                     }
-                    title={savedPost ? post?.post?.user.first_name : post?.userid?.first_name }
+                    title={savedPost ? post?.post?.user.first_name : post?.userid?.first_name}
                     subheader={<Moment fromNow interval={30}>
                         {post.createdAt}
                     </Moment>}
@@ -138,92 +147,52 @@ export default function Post({ post,savedPost }) {
                 >
                     <Box sx={stylee}>
 
-                        {user?._id == post?.userid?._id ? <Button>Delete Post</Button> : ( <>
-                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                            <CloseIcon />
+                        {user?._id == post?.userid?._id ? <Button>Delete Post</Button> : (<>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <CloseIcon />
 
-                        </div>
+                            </div>
 
-                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            Please select a problem
-                        </Typography>
-                        <div style={{ marginTop: "2px" }}>
+                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                Please select a problem
+                            </Typography>
+                            <div style={{ marginTop: "2px" }}>
 
 
-                            <Typography  >Nudity</Typography>
+                                <Typography  >Nudity</Typography>
 
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                            <NavigateNextIcon onClick={() => {
-                                console.log('nudity');
-                                swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
-                                handleOpen()
-                                
-                            }}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <NavigateNextIcon onClick={() => {
+                                    console.log('nudity');
+                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                    handleOpen()
 
-                            />
+                                }}
 
-                        </div>
-
-                        <Typography>Terrorism</Typography>
-                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-
-                            <NavigateNextIcon onClick={() => {
-                                reportPost()
-                                
-                                console.log('terrorism reported');
-                                swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
-                            }} />
-                        </div>
-                        <Typography>Violence</Typography>
-                        <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                            <NavigateNextIcon onClick={() => {
-                                console.log('violence reported');
-                                swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
-                            }} />
-                        </div>
+                                />
+                            </div>
+                            <Typography>Terrorism</Typography>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <NavigateNextIcon onClick={() => {
+                                    reportPost()
+                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                }} />
+                            </div>
+                            <Typography>Violence</Typography>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                                <NavigateNextIcon onClick={() => {
+                                    swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
+                                }} />
+                            </div>
                         </>
                         )}
-                        {/* <MenuItem >
-                    Delete Post</MenuItem>
-                : <Typography>Report  Post</Typography>} */}
-
-
                     </Box>
                 </Modal>
-
-
-
-
-
-
-                {/* <Menu
-                    id="fade-menu"
-                    MenuListProps={{
-                        'aria-labelledby': 'fade-button',
-                    }}
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    TransitionComponent={Fade}
-
-                >
-
-                    {user.user._id === post.userid._id ?
-                        <MenuItem onClick={reportPost}>
-                            Delete Post</MenuItem>
-                        :
-
-                        <MenuItem onClick={reportPost}>
-                            Report Post</MenuItem>
-                    }
-                </Menu> */}
-
                 {
                     post.img.map((img) => (<CardMedia
                         component="img"
                         height={"400"}
-                        // width={1000}
                         image={img}
                         alt="A"
                     />))
@@ -235,11 +204,11 @@ export default function Post({ post,savedPost }) {
                 </CardContent>
                 <div style={{ display: 'flex', justifyContent: "space-between" }}>
                     <span style={{ display: "flex", justifyContent: "space-around" }} >
-                        {post.likes.length}
+                        {post?.likes?.length}
                         likes
                     </span>
                     <span>
-                        {post.comments.length}
+                        {post?.comments?.length}
                         comments
                     </span>
                 </div>
@@ -249,7 +218,7 @@ export default function Post({ post,savedPost }) {
                 <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-around" }}>
                     <IconButton aria-label="add to favoritess" size='small'>
                         <Checkbox onClick={addLike}
-                            icon={!likes ? <FavoriteBorder sx={{ color: 'grey' }} /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'white' }} />}
+                            icon={!likes ? <Favorite sx={{ color: 'grey' }} /> : <Favorite sx={{ color: 'red' }} />} checkedIcon={<Favorite sx={{ color: 'red' }} />}
                         />
 
                     </IconButton>
@@ -261,11 +230,14 @@ export default function Post({ post,savedPost }) {
                     >
                         <CommentOutlinedIcon />
                     </ExpandMore>
-                    <Save onClick={() => {
-                        savePost()
-                        swal(" Your  item is saved !", " to your saved posts . !", "success");
-                    }}
-                    />
+                    {
+                        !save? <Save onClick={savePost}
+                        />
+                         :
+                         <BookmarkOutlinedIcon onClick={savePost}  />
+                
+                }
+                    
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>

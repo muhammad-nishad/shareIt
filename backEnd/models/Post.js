@@ -7,6 +7,11 @@ const postSchema = mongoose.Schema(
             ref: "User"
             // required:true
         },
+        delete:{
+            type:Boolean,
+            default:false
+
+        },
         description: {
             type: String,
             // required:true

@@ -12,13 +12,13 @@ io.on('connection',(socket)=>{
     // add new User
     socket.on('new-user-add',(newUserId)=>{
         console.log(newUserId,'new');
-        if(!activeUsers.some((user)=>user.user.id==newUserId)){
-
+        if(!activeUsers.some((user)=>user?.userId==newUserId)){
+            
             activeUsers.push({
                 userId:newUserId,
                 socketId:socket.id
             })
-
+            
         }
         console.log("connected users",activeUsers);
         io.emit('get-users',activeUsers)

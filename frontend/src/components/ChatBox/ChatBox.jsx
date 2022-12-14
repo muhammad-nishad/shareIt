@@ -13,7 +13,7 @@ export default function ChatBox({ chat, currentUser, setSendMessage, receieveMes
 
 
     useEffect(() => {
-        if (receieveMessage !== null && receieveMessage.chatId == chat._id) {
+        if (receieveMessage !== null && receieveMessage?.chatId == chat?._id) {
             setMessages([...messages, receieveMessage])
 
         }
@@ -28,7 +28,7 @@ export default function ChatBox({ chat, currentUser, setSendMessage, receieveMes
             try {
                 axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUser/${userId}`).then(({ data }) => {
                     setUserData(data)
-                    console.log(data, 'chatboxdata');
+
                 })
             } catch (error) {
                 console.log(error);
@@ -56,12 +56,12 @@ export default function ChatBox({ chat, currentUser, setSendMessage, receieveMes
 
     }, [chat])
 
-    const handleChange = (newMessage) => {
-        setNewMessage(newMessage)
+    const handleChange = (e) => {
+        setNewMessage(e.target.value)
 
     }
 
-    const handleSend = (e) => {
+    const handleSend = async (e) => {
         e.preventDefault();
         const message = {
             senderId: currentUser,
@@ -70,23 +70,17 @@ export default function ChatBox({ chat, currentUser, setSendMessage, receieveMes
         }
         //send message to database
         try {
-            axios.post(`${process.env.REACT_APP_BACKEND_URL}/message`, { message }).then(({ data }) => {
-                setNewMessage([...messages, data])
-                setNewMessage(" ")
-            })
-
-
+            const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/message`, { message })
+            console.log(data)
+            setMessages([...messages, data])
+            setNewMessage(" ")
         } catch (error) {
             console.log(error);
-
         }
         //send message to socket server
         const receiverId = chat.members.find((id) => id !== currentUser)
         setSendMessage({ ...message, receiverId })
-
-
     }
-
     return (
         <>
             <div className='ChatBox-container'>
@@ -110,18 +104,16 @@ export default function ChatBox({ chat, currentUser, setSendMessage, receieveMes
                         {/* chatbox messages */}
                         <div className='chat-body' >
                             {messages.map((message) => (
-                                <>
-                                    <div className={message.senderId == currentUser ? "message own" : "message"} >
-                                        <span>{message.text}</span>
-                                        <span>{format(message.createdAt)}</span>
-                                    </div>
-                                </>
+                                <div className={message.senderId == currentUser ? "message own" : "message"} key={message._id} >
+                                    <span>{message.text}</span>
+                                    <span>{format(message.createdAt)}</span>
+                                </div>
                             ))}
                         </div>
                         {/* chat sender */}
                         <div className='chat-sender' >
                             <div>+</div>
-                            <InputEmoji
+                            <input
                                 value={newMessage}
                                 onChange={handleChange}
                             />

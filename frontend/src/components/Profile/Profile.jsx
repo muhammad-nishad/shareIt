@@ -17,6 +17,7 @@ export default function Profile() {
     const token = user?.token
     console.log(user,'getpost userprofile');
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile`, { headers: { token: token } }).then(({ data }) => {
+      console.log(data,'getuserprofile');
       // setPosts(data.post)
       dispatch({
         type: "POSTS_SUCCESS",

@@ -1,5 +1,5 @@
 import Cookies from "js-cookie"
-export function userReducer(state, action) {
+export function userReducer(state={refresh:false}, action) {
     state = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null
     switch (action.type) {
         case "LOGIN":
@@ -8,7 +8,7 @@ export function userReducer(state, action) {
         case "LOGOUT":
             return null;
         case 'REFRESH':
-            return { ...state, refresh:true };
+            return { ...state, refresh:[] };
 
         default:
             return { ...state }

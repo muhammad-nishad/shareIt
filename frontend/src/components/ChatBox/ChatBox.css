@@ -20,7 +20,7 @@
   }
   
   .message {
-    background: var(--buttonBg);
+    background:  #d2691e;
     color: white;
     padding: 0.7rem;
     border-radius: 1rem 1rem 1rem 0;

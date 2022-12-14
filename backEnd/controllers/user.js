@@ -385,7 +385,8 @@ exports.getUserProfile = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
-        const post = await Post.find({ userid: userid }).sort({ createdAt: -1 })
+        const post = await Post.find({ userid: userid }).populate("userid", "first_name last_name user_name")
+            .sort({ createdAt: -1 })
         res.json({ post, user })
 
     } catch (error) {
@@ -481,8 +482,8 @@ exports.getPeopleMayKnow = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
-        const peoples = await User.find({ _id: { $nin: [user.following, req.user.id] } })
-        res.json(peoples)
+        const people = await User.find({ id: { $nin: [user.following, req.user.id] } })
+        res.json(people)
     } catch (error) {
         console.log(error);
     }
@@ -492,75 +493,78 @@ exports.savePost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
-        console.log(user, 'user');
         const postId = mongoose.Types.ObjectId(req.body.postid)
-        console.log(postId, 'postid');
         if (!user.savedPosts.some((savedPosts) => savedPosts.post + '' == postId)) {
             await user.updateOne
                 ({
                     $push: {
                         savedPosts: {
                             post: postId
-
                         }
-
                     }
                 });
             res.status(200).json("Post Added to Saved Posts")
         } else {
-            res.status(201).json("This post is alredy in your savedposts")
+            await user.updateOne({
+                $pull: {
+                    savedPosts: {
+                        post: postId
+                    }
+                }
+            })
+            res.status(200).json("Post removed from Saved Posts")
         }
-
     } catch (error) {
         console.log(error);
-
     }
 }
-exports.getSavedPosts=async (req,res)=>{
+exports.getSavedPosts = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user=await User.findById(userid).populate('savedPosts.post')
-        console.log(user,'user');
+        const user = await User.findById(userid).populate('savedPosts.post')
+        console.log(user, 'user');
         res.status(200).json(user)
-        
+
     } catch (error) {
         console.log(error);
-        
+
     }
 }
-exports.addProfilePicture=async(req,res)=>{
+exports.addProfilePicture = async (req, res) => {
     try {
-        console.log(req.body,'body');
-        const image=req.body.img
+        console.log(req.body, 'body');
+        const image = req.body.img
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user=await User.findById(userid)
-        await user.updateOne({$set:
+        const user = await User.findById(userid)
+        await user.updateOne({
+            $set:
             {
-            profilePicture:image
-        }})
+                profilePicture: image
+            }
+        })
         res.status(200).json("image added succesfully")
 
-        
+
     } catch (error) {
         console.log(error);
-        
+
     }
 }
-exports.getUser=async(req,res)=>{
-    const id=req.params.userId
-    console.log(id,'para');
+exports.getUser = async (req, res) => {
+    const id = req.params.userId
+    console.log(id, 'para');
     try {
 
-        const user=await User.findById(id)
-        if(user){
+        const user = await User.findById(id)
+        if (user) {
             res.status(200).json(user)
-        }else{
+        } else {
             res.status(500).json("No such User")
         }
-        
+
     } catch (error) {
         res.status(500).json(error)
-        
+
     }
 }
 

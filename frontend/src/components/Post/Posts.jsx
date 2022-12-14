@@ -14,6 +14,7 @@ function Posts({posts,dispatch}) {
   // const { user } = useSelector(state => ({ ...state }))
   const refresh = useSelector((state) => state.user.refresh)
   useEffect(() => {
+
     console.log(user)
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getposts`, { headers: { token: user?.token } }).then(({ data }) => {
       dispatch({
@@ -24,7 +25,7 @@ function Posts({posts,dispatch}) {
     }).catch(err => {
       console.log(err, 'catch block of axios');
     })
-  }, [])
+  }, [refresh])
   console.log(user?.email)
   return (
     <>

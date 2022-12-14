@@ -28,11 +28,6 @@ export default function Chat() {
     }, [sendMessage])
 
    
-
-
-
-
-
     useEffect(() => {
         socket.current = io('http://localhost:8800')
         socket.current.emit("new-user-add", user._id)
@@ -52,8 +47,6 @@ export default function Chat() {
 
     }, [])
 
-
-
     useEffect(() => {
         const getChats = async () => {
             axios.get(`${process.env.REACT_APP_BACKEND_URL}/chat/${user._id}`).then(({ data }) => {
@@ -64,17 +57,15 @@ export default function Chat() {
         getChats()
     }, [user])
 
-
-
     return (
         <div className='Chat'>
             <div className='Left-side-chat'>
                 <div className='Chat-container'>
                     <h2>Chats</h2>
                     <div className='chat-list'>
-                        {chats.map((chats) => (
-                            <div onClick={() => setCurrentChat(chats)}  >
-                                <Conversation data={chats} currentUserId={user._id} />
+                        {chats.map((chat) => (
+                            <div onClick={() => setCurrentChat(chat)} key={chat._id} >
+                                <Conversation data={chat} currentUserId={user._id} />
                             </div>
                         )
                         )}
