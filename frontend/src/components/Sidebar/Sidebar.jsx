@@ -2,6 +2,8 @@ import { List, Box, ListItem, ListItemButton, ListItemIcon, ListItemText, Switch
 import NotificationsActiveOutlinedIcon from '@material-ui/icons/NotificationsActiveOutlined';
 import ExploreOutlinedIcon from '@material-ui/icons/ExploreOutlined';
 import ChatBubbleOutlinedIcon from '@material-ui/icons/ChatBubbleOutlined';
+// import HomeIcon from '@mui/icons-material/Home';
+// import HomeIcon from '@mui/icons-material/Home';
 import HomeIcon from '@mui/icons-material/Home';
 import Diversity2OutlinedIcon from '@mui/icons-material/Diversity2Outlined';
 import React from 'react'
@@ -12,10 +14,10 @@ function Sidebar() {
   const navigate = useNavigate()
   return (
 
-    <Box flex={1} p={1} sx={{ display: { xs: 'none', md: 'block' } }} >
+    <Box flex={1} p={1} sx={{ display: { xs: 'none', md: 'block',backgroundColor:"white" } }} >
       <Box position='fixed'>
 
-        <List>
+        <List  >
           <ListItem disablePadding>
             <ListItemButton component='a' onClick={(e) => {
               e.preventDefault()
@@ -49,12 +51,16 @@ function Sidebar() {
           </ListItem>
 
           <ListItem disablePadding>
-            <ListItemButton component='a' href='#'>
+            <ListItemButton component='a' href='#' onClick={(e)=>{
+              e.preventDefault()
+              navigate("/chat")
+              
+            }} >
               <ListItemIcon>
                 <ChatBubbleOutlinedIcon />
               </ListItemIcon>
               <ListItemText primary="Chats" />
-            </ListItemButton>
+            </ListItemButton >
           </ListItem>
           <ListItem disablePadding>
             <ListItemButton component='a' onClick={(e)=>{

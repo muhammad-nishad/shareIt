@@ -7,18 +7,22 @@ import Post from '../Post/Post'
 import Sidebar from '../Sidebar/Sidebar'
 import Topbar from '../Userprofile/Topbar'
 
-export default function Profile() {
+export default function Profile({id}) {
   const [{ posts }, dispatch] = useReducer(postsReducer, { posts: [] })
-  // const [posts,setPosts]= useState([])
-  console.log(posts,'posts');
-  const {user} = useSelector(state => ({ ...state }))
-  const refresh = useSelector((state)=> state.user.refresh)
-  useEffect(() => {
-    const token = user?.token
-    console.log(user,'getpost userprofile');
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile`, { headers: { token: token } }).then(({ data }) => {
-      console.log(data,'getuserprofile');
-      // setPosts(data.post)
+  const [post,setPosts]= useState([])
+  const [profile,setProfile]=useState()
+  console.log(posts, 'posts');
+  const { user } = useSelector(state => ({ ...state }))
+  console.log(user, 'userrr');
+  const refresh = useSelector((state) => state.user.refresh)
+  const token = user?.token
+
+  const getUserProfile = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id ? id : user._id}`, { headers: { token: token } }).then(({ data }) => {
+      // console.log(data, 'getuserprofile');
+      setProfile(data.user)
+      console.log(data.user,'userrr1111');
+      setPosts(data.post)
       dispatch({
         type: "POSTS_SUCCESS",
         payload: data.post
@@ -26,27 +30,34 @@ export default function Profile() {
     }).catch(err => {
       console.log(err, 'catch block of axios');
     })
+
+  }
+  useEffect(() => {
+    getUserProfile()
+
+
+
   }, [refresh])
   return (
     <>
-    <Navbar />
-    
-    <Topbar/>
+      <Navbar />
 
-    <div style={{display:"flex",alignItems:"center",flexDirection:"column"}}>
-    <div style={{maxWidth:"50%"}} >
+      <Topbar id={id} profile={profile} post={post} />
 
-    {
-     
-      posts?.map((post) => (<Post key={post._id} post={post} />))
-    }
-    {/* {
+      <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+        
+
+          {
+
+            posts?.map((post) => (<Post key={post._id} post={post} profile={profile}  />))
+          }
+          {/* {
       posts._id
     } */}
-    </div>
-    </div>
+        </div>
+      
 
-    
+
 
     </>
   )

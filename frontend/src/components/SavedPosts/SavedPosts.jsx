@@ -21,12 +21,17 @@ export default function SavedPosts() {
   },[])
   return (
     <>
-    <Box flex={4} p={1}   >
+    <Box flex={4} p={1} sx={{
+        display:'flex',
+        flexDirection: 'column',
+        alignContent: 'center',
+        flexWrap: 'wrap',
+    }}   >
       
 
     { 
     post &&
-    post.map((post)=> (<Post post={post.post} savedPost  />))  
+    post.map((post)=> (<Post   post={post.post} savedPost  />))  
     
   }
   </Box>

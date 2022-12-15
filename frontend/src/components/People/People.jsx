@@ -12,19 +12,22 @@ export default function People() {
 
     const [users, setUsers] = useState([])
     const [follow,setFollow]=useState(false)
-    const followUser = async (id) => {
-        axios.post(`${process.env.REACT_APP_BACKEND_URL}/follow`, { userid: id }, { headers: { token: token } }).then((response) => {
-            console.log(response,'response');
-            // setFollow(true)
-        })
-    }
+    
+    // const followUser = async (id) => {
+    //     axios.post(`${process.env.REACT_APP_BACKEND_URL}/follow`, { userid: id }, { headers: { token: token } }).then((response) => {
+    //         console.log(response,'response');
+    //         // setFollow(true)
+    //     })
+    // }
 
 
 
 
     const getUser = async () => {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getPeopleMayKnow`,{ headers: { token: token } })
-        setUsers(response.data)
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getPeopleMayKnow`,{ headers: { token: token } }).then(({data})=>{
+            console.log(data,'111111');
+            setUsers(data)
+        })
     }
     useEffect(() => {
         getUser();
@@ -35,7 +38,7 @@ export default function People() {
         <>
          {
             users?.map((data) =>(
-                <UserCard follow={followUser} people  data={data} />
+                <UserCard  people  data={data} />
             )
                 // <div style={{ width: "10vw", display: "flex", paddingTop: 25, paddingLeft: 30, gap: 12 }}>
                 //     <div style={{ border: "1px solid black" }}>

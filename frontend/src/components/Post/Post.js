@@ -14,6 +14,7 @@ import Moment from 'react-moment';
 import swal from 'sweetalert';
 import Save from '@mui/icons-material/TurnedInNotOutlined';
 import BookmarkOutlinedIcon from '@mui/icons-material/BookmarkOutlined';
+import { useNavigate } from 'react-router-dom';
 
 
 const stylee = {
@@ -42,7 +43,7 @@ const ExpandMore = styled((props) => {
 }));
 
 
-export default function Post({ post, savedPost }) {
+export default function Post({ post, savedPost,profile,feed }) {
     const { user } = useSelector(state => ({ ...state }))
     const [likes, setLikes] = useState(false)
     const [save,setSave]=useState(false)
@@ -57,7 +58,8 @@ export default function Post({ post, savedPost }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
+    
+    const Navigate=useNavigate()
 
 
 
@@ -116,25 +118,50 @@ export default function Post({ post, savedPost }) {
             console.log(response, 'save');
         })
     }
+
+    const deletePost=()=>{
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/deletePost`,{postid:post._id},{headers:{token:userToken.token}}).then(({data})=>{
+            console.log(data,'deletePost');
+            // dispatch({ type: 'REFRESH' })
+        })
+
+    }
+
+    // const getUserProfile=(id)=>{
+    //     console.log(id,'userid');
+    //     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id}`, { headers: { token: userToken.token } }).then(({data})=>{
+            
+    //         console.log(data,'user');
+    //     })
+    // }
+
+
+
+
     const [openn, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClosee = () => setOpen(false);
     if (savedPost) console.log(post)
     return (
         <>
-            <Card sx={{ marginY: "25px",maxWidth:"30rem" }}>
+            <Card sx={{ marginY: "25px",maxWidth:"30rem", width:'-webkit-fill-available', marginLeft:'0',boxShadow:"0px 0px 15px 1px rgba(0, 0, 0, 0.09)"}}>
                 <CardHeader
                     avatar={
-                        <Avatar sx={{ bgcolor: 'black' }} aria-label="recipe">
-                            M
+                        <Avatar  onClick={()=>{
+                         Navigate(`/profile/${post.userid._id}`)}} sx={{ bgcolor: 'black' }} aria-label="recipe">
+                            
+                            
+                            <img src= { feed? post. userid.profilePicture :  profile?profile.profilePicture:'icons/nishad.jpeg' } style={{width:"40px"}}   />
                         </Avatar>
+                        
                     }
                     action={
                         <IconButton aria-label="settings">
                             <MoreVert onClick={handleClick} />
                         </IconButton>
                     }
-                    title={savedPost ? post?.post?.user.first_name : post?.userid?.first_name}
+                    title={savedPost ? post?.userid?.first_name : post?.userid?.first_name}
+                     
                     subheader={<Moment fromNow interval={30}>
                         {post.createdAt}
                     </Moment>}
@@ -147,7 +174,7 @@ export default function Post({ post, savedPost }) {
                 >
                     <Box sx={stylee}>
 
-                        {user?._id == post?.userid?._id ? <Button>Delete Post</Button> : (<>
+                        {user?._id == post?.userid?._id ? <Button onClick={deletePost}  >Delete Post</Button> : (<>
                             <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
                                 <CloseIcon />
 
@@ -157,14 +184,11 @@ export default function Post({ post, savedPost }) {
                                 Please select a problem
                             </Typography>
                             <div style={{ marginTop: "2px" }}>
-
-
                                 <Typography  >Nudity</Typography>
 
                             </div>
                             <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
                                 <NavigateNextIcon onClick={() => {
-                                    console.log('nudity');
                                     swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
                                     handleOpen()
 
@@ -202,14 +226,23 @@ export default function Post({ post, savedPost }) {
                         {post?.description}
                     </Typography>
                 </CardContent>
-                <div style={{ display: 'flex', justifyContent: "space-between" }}>
-                    <span style={{ display: "flex", justifyContent: "space-around" }} >
+                <div style={{ display: 'flex', justifyContent: "space-between",paddingBottom:"8px" }}>
+                    <span style={{ display: "flex", justifyContent: "space-around",paddingLeft:"18px" }} >
+                        <small > 
+
                         {post?.likes?.length}
-                        likes
+                        </small>
+                        <small style={{paddingLeft:"3px"}} > likes </small>
                     </span>
-                    <span>
+                    <span style={{marginRight:"10px"}}> 
+                        <small>
+
                         {post?.comments?.length}
+                        </small>
+                        <small style={{paddingLeft:"3px"}}>
+
                         comments
+                        </small>
                     </span>
                 </div>
 

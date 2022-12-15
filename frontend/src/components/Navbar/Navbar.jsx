@@ -54,6 +54,7 @@ function Navbar({ color }) {
 
     const getSearchUser = async () => {
         const response = await axios.get(`http://localhost:8000/usersearch/${formik.values.users}`)
+        console.log(response.data,'serarchhgfgkfjk');
         setSearchUser(response.data)
     }
     useEffect(() => {
@@ -81,10 +82,16 @@ function Navbar({ color }) {
                     />
                 </Search>
 
-                {searchUser.length ?
-                    <Box sx={{ width: "20%", backgroundColor: 'white', position: 'absolute', left: "38.5%", height: "50%", top: "85%", color: "black" }}>
-                      {searchUser}
-                    </Box>
+                {searchUser? searchUser.map((users)=>{
+                    return (
+                        <Box sx={{ width: "20%", backgroundColor: 'white', position: 'absolute', left: "38.5%", height: "50%", top: "85%", color: "black" }}>
+                        {users.first_name? users.first_name: null}
+                      </Box>
+                      
+
+                    )
+                })
+                   
                     : ""
                 }
                 <Icons>

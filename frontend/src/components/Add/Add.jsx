@@ -82,13 +82,13 @@ function Add({dispatch}) {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description" >
                 <Box width={400} height={310} bgcolor='white' p={3} borderRadius={5} >
-                    <Typography variant='h6' color='grey' textAlign='center'>Create Post</Typography>
+                    <Typography variant='h6' color='grey' textAlign='center'>make a post</Typography>
                     <UserBox>
                         <Avatar
-                            src=''
+                            src={user? user?.profilePicture:"icons/blankprofile.webp"}
                             sx={{ width: 30, height: 30 }}
                         />
-                        <Typography fontWeight={500} variant='span'>{user?.user?.first_name}</Typography>
+                        <Typography fontWeight={500} variant='span'>{user?.first_name}</Typography>
                     </UserBox>
                     <TextField
                         sx={{ width: '100%' }}

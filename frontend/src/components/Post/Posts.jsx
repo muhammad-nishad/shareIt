@@ -15,8 +15,8 @@ function Posts({posts,dispatch}) {
   const refresh = useSelector((state) => state.user.refresh)
   useEffect(() => {
 
-    console.log(user)
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getposts`, { headers: { token: user?.token } }).then(({ data }) => {
+      console.log('getposts',data);
       dispatch({
         type: "POSTS_SUCCESS",
         payload: data
@@ -26,11 +26,11 @@ function Posts({posts,dispatch}) {
       console.log(err, 'catch block of axios');
     })
   }, [refresh])
-  console.log(user?.email)
+  // console.log(user?.email)
   return (
     <>
       {
-        posts?.map((post) => (<Post  key={post._id} post={post} />))
+        posts?.map((post) => (<Post  key={post._id} post={post} feed />))
       }
     </>
   )

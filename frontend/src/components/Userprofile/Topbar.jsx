@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-export default function Topbar() {
+export default function Topbar({id,profile,post}) {
     const uploadImage = () => {
         const formData = new FormData()
         console.log(image, 'image');
@@ -48,14 +48,14 @@ export default function Topbar() {
     const handleClose = () => setOpen(false);
     const [image, setImage] = useState()
 
-    useEffect(() => {
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile`, { headers: { token: token } }).then(({ data }) => {
-            console.log(data, 'userprofile');
-            setUser(data.user)
-            setPosts(data.post)
+    // useEffect(() => {
+    //     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id ?id :user._id}`, { headers: { token: token } }).then(({ data }) => {
+    //         console.log(data, 'topbar');
+    //         setUser(data.user)
+    //         // setPosts(data.post)
 
-        })
-    }, [image])
+    //     })
+    // }, [image])
     return (
         <div style={{ maxWidth: "600px", margin: "0px auto" }}>
             <div style={{
@@ -67,9 +67,8 @@ export default function Topbar() {
                 <div>
                     <img onClick={handleOpen} style={{ width: "160px", height: "160px", borderRadius: '80px', cursor: 'pointer' }}
 
-                        src={user ? user.profilePicture : 'icons/blankprofile.webp'}
+                        src={profile && profile.profilePicture ?profile.profilePicture :'/icons/nishad.jpeg'}
                     />
-
                     <Modal
                         open={open}
                         onClose={handleClose}
@@ -103,11 +102,11 @@ export default function Topbar() {
 
                 </div>
                 <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", paddingRight: "120px", gap: "30px", fontWeight: 300 }}>
-                    <h3>{user?.user_name && user.user_name}</h3>
+                    <h3>{profile?.user_name && profile.user_name}</h3>
                     <div style={{ display: "flex", justifyContent: "space-between", width: "140%" }}>
-                        <h6>{posts && posts.length} posts</h6>
-                        <h6>{user?.followers && user?.followers.length} followers</h6>
-                        <h6>{user?.following && user?.following.length} following</h6>
+                        <h6>{post && post.length} posts</h6>
+                        <h6>{profile?.followers && profile?.followers.length} followers</h6>
+                        <h6>{profile?.following && profile?.following.length} following</h6>
                     </div>
                 </div>
             </div>

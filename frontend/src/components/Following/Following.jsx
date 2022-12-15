@@ -9,22 +9,31 @@ export default function Following({ Following }) {
 
   tokenData = JSON.parse(tokenData)
   const { token } = tokenData
+  const [follow,setFollow]=useState(false)
 
 
-  // const getAllFollowing = async (id) => {
-  //   axios.get(`${process.env.REACT_APP_BACKEND_URL}/getallFollowing`, { headers: { token: token } }).then((response) => {
-  //       console.log(response.data, 'response');
-  //       // setUsers(response.data)
-  //   })
-  // }
-  const getAllFollowing = async (id) => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/getallFollowing`, { headers: { token: token } }).then((response) => {
-      console.log(response.data, 'response');
-      setUser(response.data)
-    })
+   const followUser = async (id) => {
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/follow`, { userid: id }, { headers: { token: token } }).then((response) => {
+            console.log(response,'follow2222');
+            // setFollow(true)
+        })
+    }
+
+    const getAllFollowing = async (id) => {
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/getallFollowing`, { headers: { token: token } }).then((response) => {
+          console.log(response.data, 'response');
+          setUser(response.data)
+          setFollow(true)
+      })
   }
+
+
+
+
+
   useEffect(() => {
     getAllFollowing()
+    // followUser()
 
   }, [])
   return (

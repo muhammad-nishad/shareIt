@@ -19,6 +19,7 @@ function App() {
           <Route  path="/" element={<UserHome />} exact />
           <Route path="/:type" element={<UserHome />} exact />
           <Route path="/profile" element={<ProfilePage />} exact />
+          <Route path="/profile/:id" element={<ProfilePage />} exact />
           <Route path='/chat' element={<Chat/>} exact/>
         {/* </Route> */}
         {/* <Route element={<NotLoggedInRoutes />}> */}

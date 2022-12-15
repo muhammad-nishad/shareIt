@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 const { db, ensureIndexes } = require("../models/User");
 const Otp = require('../models/Otp')
 const OtpVerification = require('../nodemailer/nodeMailer');
-const { default: mongoose } = require("mongoose");
+const  mongoose  = require("mongoose");
 
 const sendOtp = async ({ _id, email }, res) => {
     const transport = nodemailer.createTransport({
@@ -297,16 +297,15 @@ exports.updatePost = async (req, res) => {
 //deletePost
 exports.deletePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
-        if (post.userId === req.body.userId) {
-            await post.deleteOne();
-            res.status(200).json("Your post is deleted ")
-        } else {
-            res.status(403).json("You can only delete your posts only")
-        }
+        const postid = mongoose.Types.ObjectId(req.body.postid)
+        const post = await Post.findByIdAndUpdate(req.body.postid, { delete: true })
+        console.log(post, 'ppost');
+        res.status(200).json("This Post has been deleted")
     } catch (error) {
         res.status(500).json(error)
+
     }
+
 }
 
 //like /dislike a post
@@ -372,7 +371,8 @@ exports.userSearch = async (req, res) => {
 exports.getUserPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const post = await Post.find().populate("userid", "first_name last_name user_name").sort({ createdAt: -1 })
+        const post = await Post.find({ delete: "false" }).populate("userid", "first_name last_name user_name profilePicture").sort({ createdAt: -1 })
+        console.log(post,'posts');
         res.json(post)
     } catch (error) {
         console.log(error);
@@ -383,8 +383,15 @@ exports.getUserPost = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
     try {
-        const userid = mongoose.Types.ObjectId(req.user.id)
+        console.log(req.params);
+        // const { userid } = req.params;
+        const userid = mongoose.Types.ObjectId(req.params.userid)
+        console.log(typeof(userid));
+        console.log(userid);
+
+        // const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
+        console.log(user,'profile');
         const post = await Post.find({ userid: userid }).populate("userid", "first_name last_name user_name")
             .sort({ createdAt: -1 })
         res.json({ post, user })
@@ -398,9 +405,13 @@ exports.getUserProfile = async (req, res) => {
 exports.follow = async (req, res) => {
     try {
         const followingId = mongoose.Types.ObjectId(req.body.userid)
+        console.log(followingId,'following');
         const userid = mongoose.Types.ObjectId(req.user.id)
+        console.log(userid,'fathima');
         const user = await User.findById(followingId)
+        console.log(user,'followingperson');
         const currentUser = await User.findById(req.user.id)
+        console.log(currentUser,'fathimafiya');
         if (!user.followers.includes(userid)) {
             await user.updateOne({ $push: { followers: userid } });
             await currentUser.updateOne({ $push: { following: followingId } })
@@ -418,6 +429,7 @@ exports.getAllFollowing = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(req.user.id).populate('following')
+        console.log(user,'user');
         res.json(user)
 
     } catch (error) {
@@ -480,9 +492,18 @@ exports.reportPost = async (req, res) => {
 }
 exports.getPeopleMayKnow = async (req, res) => {
     try {
-        const userid = mongoose.Types.ObjectId(req.user.id)
+        console.log(req.user.id,'midddle');
+        // const userid = mongoose.Types.ObjectId(req.user.id)
+        const userid = req.user.id
+        console.log(typeof(userid,'typeeeeeee'));
+        if(!mongoose.isValidObjectId(userid)){
+            return res.status(400).json({message:'Invalid ObjectId'})
+        }
+        // const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(userid)
-        const people = await User.find({ id: { $nin: [user.following, req.user.id] } })
+        // console.log(user,'user');
+        const people = await User.find({_id:{ $nin: [...user.following, req.user.id]} })
+        // console.log(people,'people');
         res.json(people)
     } catch (error) {
         console.log(error);
@@ -521,7 +542,7 @@ exports.savePost = async (req, res) => {
 exports.getSavedPosts = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user = await User.findById(userid).populate('savedPosts.post')
+        const user = await User.findById(userid).populate('savedPosts.post').sort({createdAt:1})
         console.log(user, 'user');
         res.status(200).json(user)
 
