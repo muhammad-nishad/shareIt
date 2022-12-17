@@ -111,13 +111,13 @@ function Add({dispatch}) {
                             }}
                             id="image_input"
                         />
-                        <label className="img_label" htmlFor="image_input">
+                        <label className="img_label" htmlFor="image_input" style={{cursor:"pointer"}} >
                             <Image color='secondary'
                             />
                         </label>
                     </Stack>
                     <ButtonGroup  fullWidth variant="contained" aria-label="outlined primary button group">
-                        <Button    onClick={uploadImage}  >Post</Button>
+                        <Button  onClick={uploadImage}  >Post</Button>
                     </ButtonGroup>
                 </Box>
             </StyledModal>

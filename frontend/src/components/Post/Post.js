@@ -45,6 +45,8 @@ const ExpandMore = styled((props) => {
 
 export default function Post({ post, savedPost,profile,feed }) {
     const { user } = useSelector(state => ({ ...state }))
+    console.log(user,'userformredux');
+    console.log(post,'postfrom props');
     const [likes, setLikes] = useState(false)
     const [save,setSave]=useState(false)
     const [showMenu, setShowMenu] = useState(false)
@@ -64,11 +66,6 @@ export default function Post({ post, savedPost,profile,feed }) {
 
 
     useEffect(() => {
-        // post.likes.map((likes) => {
-        //     if (likes._id === user.id) {
-        //         setLikes(true)
-        //     }
-        // })
         console.log({userid : post.likes});
         if(post?.likes.includes(user?._id)){
             setLikes(true)
@@ -76,6 +73,18 @@ export default function Post({ post, savedPost,profile,feed }) {
             setLikes(false)
         }
     }, [post])
+
+
+    // useEffect(()=>{
+    //     if(user?.savedPost?.post===post?._id){
+    //         setSave(false)
+
+    //     }else{
+    //         setSave(true)
+    //     }
+    // },[post])
+
+
     //useselector
 
     const [expanded, setExpanded] = useState(false);
@@ -86,7 +95,6 @@ export default function Post({ post, savedPost,profile,feed }) {
     let userToken = Cookies.get('user')
     userToken = JSON.parse(userToken)
     const addLike = () => {
-        console.log('like function');
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/likePost`, { postid: post._id }, { headers: { token: userToken.token } }).then((data) => {
             setLikes(true)
             dispatch({ type: 'REFRESH' })
@@ -115,6 +123,7 @@ export default function Post({ post, savedPost,profile,feed }) {
         setSave(true)
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/savedPost`, { postid: post._id, }, { headers: { token: userToken.token } }).then((response) => {
             dispatch({ type: 'REFRESH' })
+            // setSave(true)
             console.log(response, 'save');
         })
     }
@@ -141,7 +150,7 @@ export default function Post({ post, savedPost,profile,feed }) {
     const [openn, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClosee = () => setOpen(false);
-    if (savedPost) console.log(post)
+    if (savedPost) console.log(post,'posttttttttttttttttttttttttttttttttttttttttttttttttt')
     return (
         <>
             <Card sx={{ marginY: "25px",maxWidth:"30rem", width:'-webkit-fill-available', marginLeft:'0',boxShadow:"0px 0px 15px 1px rgba(0, 0, 0, 0.09)"}}>
@@ -151,7 +160,7 @@ export default function Post({ post, savedPost,profile,feed }) {
                          Navigate(`/profile/${post.userid._id}`)}} sx={{ bgcolor: 'black' }} aria-label="recipe">
                             
                             
-                            <img src= { feed? post. userid.profilePicture :  profile?profile.profilePicture:'icons/nishad.jpeg' } style={{width:"40px"}}   />
+                            <img src= { feed? post. userid.profilePicture :  profile?profile.profilePicture:'icons/blankprofile.webp' } style={{width:"40px"}}   />
                         </Avatar>
                         
                     }
@@ -160,7 +169,7 @@ export default function Post({ post, savedPost,profile,feed }) {
                             <MoreVert onClick={handleClick} />
                         </IconButton>
                     }
-                    title={savedPost ? post?.userid?.first_name : post?.userid?.first_name}
+                    title={savedPost ? user?.first_name : post?.userid?.first_name}
                      
                     subheader={<Moment fromNow interval={30}>
                         {post.createdAt}
@@ -240,7 +249,6 @@ export default function Post({ post, savedPost,profile,feed }) {
                         {post?.comments?.length}
                         </small>
                         <small style={{paddingLeft:"3px"}}>
-
                         comments
                         </small>
                     </span>
@@ -270,6 +278,10 @@ export default function Post({ post, savedPost,profile,feed }) {
                          <BookmarkOutlinedIcon onClick={savePost}  />
                 
                 }
+                {
+                    user?.savedPosts?.post?._id===post?._id  ? "false" : console.log(user.savedPosts,"savedpostid")
+                }
+                
                     
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>

@@ -89,17 +89,17 @@ export default function ChatBox({ chat, currentUser, setSendMessage, receieveMes
                         <div className='chat-header' >
                             <div className='follower' >
                                 <div>
-                                    <img src={userData?.profilePicture} alt=''
+                                    <img src={userData?.profilePicture?userData?.profilePicture:"icons/blankprofile.webp"} alt=''
                                         className='followerImage'
-                                        style={{ width: '50px', height: '50px' }}
+                                        style={{ width: '50px', height: '50px',borderRadius:"10px" }}
 
                                     />
                                     <div className='name' style={{ fontSize: "0.8rem" }} >
-                                        <span>{userData?.first_name} {userData?.last_name}  </span>
+                                        <span>{userData?.first_name}  </span>
                                     </div>
                                 </div>
                             </div>
-                            <hr style={{ width: '85%', border: '0.1px solid #ececec' }} />
+                            <hr style={{ width: '95%', border: '0.1px solid #ececec' }} />
                         </div>
                         {/* chatbox messages */}
                         <div className='chat-body' >

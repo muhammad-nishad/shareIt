@@ -31,13 +31,13 @@ export default function Conversation({ data, currentUserId }) {
             <div className='follower conversation'>
                 <div>
                     <div className='online-dot'></div>
-                    <img src={userData?.profilePicture} alt=''
+                    <img src={userData?.profilePicture? userData?.profilePicture :"icons/blankprofile.webp"} alt=''
                         className='followerImage'
-                        style={{ width: '50px', height: '50px' }}
+                        style={{ width: '50px', height: '50px',borderRadius:"10px" }}
 
                     />
                     <div className='name' style={{ fontSize: "0.8rem" }} >
-                        <span>{userData?.first_name} {userData?.last_name}  </span>
+                        <span>{userData?.first_name}   </span>
                         <span>Online</span>
                     </div>
                 </div>

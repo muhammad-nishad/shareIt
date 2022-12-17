@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import Navbar from '../Navbar/Navbar'
 import './topbar.css'
 import SendIcon from '@mui/icons-material/Send';
+import { useSelector } from 'react-redux'
 const style = {
     position: 'absolute',
     top: '50%',
@@ -20,7 +21,7 @@ const style = {
     p: 4,
 };
 
-export default function Topbar({id,profile,post}) {
+export default function Topbar({ id, profile, post }) {
     const uploadImage = () => {
         const formData = new FormData()
         console.log(image, 'image');
@@ -37,25 +38,33 @@ export default function Topbar({id,profile,post}) {
         })
 
     }
+    
     let tokenData = Cookies.get('user')
     tokenData = JSON.parse(tokenData)
     const { token } = tokenData
-    const [user, setUser] = useState({})
+    // const [user, setUser] = useState({})
     const [posts, setPosts] = useState([])
     const [modal, setModal] = useState(false)
+    const [follow,setFollow]=useState(false)
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [image, setImage] = useState()
+    const { user } = useSelector(state => ({ ...state }))
+    useEffect(()=>{
+        if(user?.following.includes(id)){
+            console.log('alredy follow');
+            setFollow(false)
+        }else{
+            console.log('not foloing');
+            setFollow(true)
+        }
 
-    // useEffect(() => {
-    //     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id ?id :user._id}`, { headers: { token: token } }).then(({ data }) => {
-    //         console.log(data, 'topbar');
-    //         setUser(data.user)
-    //         // setPosts(data.post)
+    },[])
 
-    //     })
-    // }, [image])
+
+
+
     return (
         <div style={{ maxWidth: "600px", margin: "0px auto" }}>
             <div style={{
@@ -65,44 +74,58 @@ export default function Topbar({id,profile,post}) {
                 borderBottom: "1px solid grey"
             }}>
                 <div>
-                    <img onClick={handleOpen} style={{ width: "160px", height: "160px", borderRadius: '80px', cursor: 'pointer' }}
-
-                        src={profile && profile.profilePicture ?profile.profilePicture :'/icons/nishad.jpeg'}
+                    <img onClick={handleOpen} style={{ width: "160px", height: "160px", borderRadius: '80px', cursor: 'pointer', objectFit: "cover" }}
+                        src={profile && profile.profilePicture ? profile.profilePicture : '/icons/blankprofile.webp'}
                     />
-                    <Modal
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                    >
-                        <Box sx={style}>
-                            {/* <input type={"file"}
-                                onChange={(e) => {
-                                    setImage(e.target.files[0])
-                                }}
-                            /> */}
-                            <Button variant="contained" component="label">
-                                Upload
-                                <input onChange={(e) => {
-                                    setImage(e.target.files[0]);
-                                }} hidden accept="image/*" type="file" />
-                            </Button>
-                            <IconButton color="primary" aria-label="upload picture" component="label">
-                                <input hidden accept="image/*" type="file"
-                                />
-                            </IconButton>
-                            <Button onClick={uploadImage} variant="contained" endIcon={<SendIcon />}>
-                                Send
-                            </Button>
 
-
-
-                        </Box>
-                    </Modal>
+                    {
+                        user?._id === profile?._id ?
+                            <Modal
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                            >
+                                <Box sx={style}>
+                                    <Button variant="contained" component="label">
+                                        Upload
+                                        <input onChange={(e) => {
+                                            setImage(e.target.files[0]);
+                                        }} hidden accept="image/*" type="file" />
+                                    </Button>
+                                    <IconButton color="primary" aria-label="upload picture" component="label">
+                                        <input hidden accept="image/*" type="file"
+                                        />
+                                    </IconButton>
+                                    <Button onClick={uploadImage} variant="contained" endIcon={<SendIcon />}>
+                                        Send
+                                    </Button>
+                                </Box>
+                            </Modal>
+                            : null
+                    }
 
                 </div>
                 <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", paddingRight: "120px", gap: "30px", fontWeight: 300 }}>
-                    <h3>{profile?.user_name && profile.user_name}</h3>
+                    <h3 style={{display:'flex', width:"100%"}} >{profile?.first_name && profile.first_name}</h3>
+                    {
+                        user?._id == profile?._id ? <button  style={{ backgroundColor: "white", color: "black", borderRadius: "7px", height: '34px', border: '1px solid', cursor: "pointer", width: "90px", marginLeft: "10px" }}>Edit profile</button> 
+                        :
+                            <div>
+                                {
+                                    follow ?  
+                                    <button  style={{ backgroundColor: '#47afff', color: "white", borderRadius: "7px", height: '34px', width: '90px', border: 'aliceblue', cursor: "pointer" }} >follow</button>
+                                    : 
+                                    <>
+                                    <button style={{ backgroundColor: "white", color: "black", borderRadius: "7px", height: '34px', border: '1px solid', cursor: "pointer", width: "90px", marginLeft: "10px" }}>message</button>
+                                    <button  style={{ backgroundColor: "#47afff", color: "white", borderRadius: "7px", height: '34px', border: '1px solid', cursor: "pointer", width: "90px", marginLeft: "10px" }}  >unfollow</button>
+                                    </>
+                                    
+                                }
+
+                            </div>
+                    }
+
                     <div style={{ display: "flex", justifyContent: "space-between", width: "140%" }}>
                         <h6>{post && post.length} posts</h6>
                         <h6>{profile?.followers && profile?.followers.length} followers</h6>

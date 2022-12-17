@@ -6,12 +6,13 @@ import Post from '../Post/Post'
 
 export default function SavedPosts() {
   const [post,setPost]=useState([])
+  const [users,setUsers]=useState()
   let tokenData = Cookies.get('user')
   tokenData = JSON.parse(tokenData)
   const { token } = tokenData
   const savedPosts=()=>{
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getallSavedPosts`,{headers:{token:token}}).then(({data})=>{
-      console.log(data,'savedppost');
+      console.log(data,'savedppostonlyyyyyyyyyyyyy');
       setPost(data.savedPosts)
     })
   }

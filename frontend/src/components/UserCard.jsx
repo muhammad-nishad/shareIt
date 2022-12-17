@@ -59,7 +59,7 @@ function UserCard({ data }) {
                     
                     
                     <Button style={{ display: "flex", paddingTop: 10 }} onClick={() => {
-                        // followuser(data._id);
+                        followuser(data._id);
                         setFollow(true)
                         // setUnfollow(false)
                     }} variant="contained" >Follow</Button>
