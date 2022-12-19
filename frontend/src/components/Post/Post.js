@@ -43,12 +43,11 @@ const ExpandMore = styled((props) => {
 }));
 
 
-export default function Post({ post, savedPost,profile,feed }) {
+export default function Post({ post, savedPost, profile, feed }) {
     const { user } = useSelector(state => ({ ...state }))
-    console.log(user,'userformredux');
-    console.log(post,'postfrom props');
+    // console.log(user,'user in redux');
     const [likes, setLikes] = useState(false)
-    const [save,setSave]=useState(false)
+    const [save, setSave] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
     const dispatch = useDispatch()
     //menu
@@ -60,29 +59,29 @@ export default function Post({ post, savedPost,profile,feed }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    
-    const Navigate=useNavigate()
+
+    const Navigate = useNavigate()
 
 
 
     useEffect(() => {
-        console.log({userid : post.likes});
-        if(post?.likes.includes(user?._id)){
+        // console.log({userid : post.likes});
+        if (post?.likes.includes(user?._id)) {
             setLikes(true)
-        }else{
+        } else {
             setLikes(false)
         }
     }, [post])
 
 
-    // useEffect(()=>{
-    //     if(user?.savedPost?.post===post?._id){
-    //         setSave(false)
+    useEffect(() => {
+        if (user?.savedPosts?.post === post?._id) {
+            setSave(true)
 
-    //     }else{
-    //         setSave(true)
-    //     }
-    // },[post])
+        } else {
+            setSave(false)
+        }
+    }, [post,user])
 
 
     //useselector
@@ -115,23 +114,31 @@ export default function Post({ post, savedPost,profile,feed }) {
     const reportPost = () => {
         axios.post(`${process.env.REACT_APP_BACKEND_URL}/reportPost`, { postid: post._id }, { headers: { token: userToken.token } }).then((response) => {
             console.log(response, 'report');
+            setAnchorEl(null)
+            setOpen(false)
         })
 
     }
 
     const savePost = () => {
         setSave(true)
-        axios.post(`${process.env.REACT_APP_BACKEND_URL}/savedPost`, { postid: post._id, }, { headers: { token: userToken.token } }).then((response) => {
-            dispatch({ type: 'REFRESH' })
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/savedPost`, { postid: post._id, }, { headers: { token: userToken.token } }).then(({ data }) => {
+            console.log(data, 'responseofsavedpost');
+            if (data.type === "added") {
+                dispatch({ type: "SAVED_POST", payload: post._id })
+            } else if (data.type === "removed") {
+                dispatch({ type: "UNSAVE_POST", payload: post._id })
+            }
             // setSave(true)
-            console.log(response, 'save');
         })
     }
 
-    const deletePost=()=>{
-        axios.post(`${process.env.REACT_APP_BACKEND_URL}/deletePost`,{postid:post._id},{headers:{token:userToken.token}}).then(({data})=>{
-            console.log(data,'deletePost');
-            // dispatch({ type: 'REFRESH' })
+    const deletePost = () => {
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/deletePost`, { postid: post._id }, { headers: { token: userToken.token } }).then(({ data }) => {
+            console.log(data, 'deletePost');
+            setOpen(false);
+            // onClose={handleClose}
+            dispatch({ type: 'REFRESH' })
         })
 
     }
@@ -139,7 +146,7 @@ export default function Post({ post, savedPost,profile,feed }) {
     // const getUserProfile=(id)=>{
     //     console.log(id,'userid');
     //     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id}`, { headers: { token: userToken.token } }).then(({data})=>{
-            
+
     //         console.log(data,'user');
     //     })
     // }
@@ -150,19 +157,17 @@ export default function Post({ post, savedPost,profile,feed }) {
     const [openn, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClosee = () => setOpen(false);
-    if (savedPost) console.log(post,'posttttttttttttttttttttttttttttttttttttttttttttttttt')
     return (
         <>
-            <Card sx={{ marginY: "25px",maxWidth:"30rem", width:'-webkit-fill-available', marginLeft:'0',boxShadow:"0px 0px 15px 1px rgba(0, 0, 0, 0.09)"}}>
+            <Card sx={{ marginY: "25px", maxWidth: "30rem", width: '-webkit-fill-available', marginLeft: '0', boxShadow: "0px 0px 15px 1px rgba(0, 0, 0, 0.09)" }}>
                 <CardHeader
                     avatar={
-                        <Avatar  onClick={()=>{
-                         Navigate(`/profile/${post.userid._id}`)}} sx={{ bgcolor: 'black' }} aria-label="recipe">
-                            
-                            
-                            <img src= { feed? post. userid.profilePicture :  profile?profile.profilePicture:'icons/blankprofile.webp' } style={{width:"40px"}}   />
+                        <Avatar onClick={() => {
+                            Navigate(`/profile/${post.userid._id}`)
+                        }} sx={{ bgcolor: 'black' }} aria-label="recipe">
+                            <img src={feed ? post.userid.profilePicture : profile ? profile.profilePicture : 'icons/blankprofile.webp'} style={{ width: "40px" }} />
                         </Avatar>
-                        
+
                     }
                     action={
                         <IconButton aria-label="settings">
@@ -170,7 +175,7 @@ export default function Post({ post, savedPost,profile,feed }) {
                         </IconButton>
                     }
                     title={savedPost ? user?.first_name : post?.userid?.first_name}
-                     
+
                     subheader={<Moment fromNow interval={30}>
                         {post.createdAt}
                     </Moment>}
@@ -181,13 +186,15 @@ export default function Post({ post, savedPost,profile,feed }) {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
-                    <Box sx={stylee}>
 
+                    <Box sx={stylee}>
                         {user?._id == post?.userid?._id ? <Button onClick={deletePost}  >Delete Post</Button> : (<>
                             <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
-                                <CloseIcon />
-
+                                {/* <CloseIcon /> */}
                             </div>
+                            <Typography>
+                                Report a Post
+                            </Typography>
 
                             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                                 Please select a problem
@@ -196,7 +203,7 @@ export default function Post({ post, savedPost,profile,feed }) {
                                 <Typography  >Nudity</Typography>
 
                             </div>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)", cursor: "pointer" }}>
                                 <NavigateNextIcon onClick={() => {
                                     swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
                                     handleOpen()
@@ -206,14 +213,14 @@ export default function Post({ post, savedPost,profile,feed }) {
                                 />
                             </div>
                             <Typography>Terrorism</Typography>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)", cursor: "pointer" }}>
                                 <NavigateNextIcon onClick={() => {
                                     reportPost()
                                     swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
                                 }} />
                             </div>
                             <Typography>Violence</Typography>
-                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)" }}>
+                            <div style={{ display: "flex", flexDirection: "row-reverse", transform: "translateY(-21px)", cursor: "pointer" }}>
                                 <NavigateNextIcon onClick={() => {
                                     swal(" Thanks for letting us know!", "Your feedback is sended. !", "error");
                                 }} />
@@ -223,7 +230,8 @@ export default function Post({ post, savedPost,profile,feed }) {
                     </Box>
                 </Modal>
                 {
-                    post.img.map((img) => (<CardMedia
+                    post.img.map((img, i) => (<CardMedia
+                        key={i}
                         component="img"
                         height={"400"}
                         image={img}
@@ -235,21 +243,21 @@ export default function Post({ post, savedPost,profile,feed }) {
                         {post?.description}
                     </Typography>
                 </CardContent>
-                <div style={{ display: 'flex', justifyContent: "space-between",paddingBottom:"8px" }}>
-                    <span style={{ display: "flex", justifyContent: "space-around",paddingLeft:"18px" }} >
-                        <small > 
+                <div style={{ display: 'flex', justifyContent: "space-between", paddingBottom: "8px" }}>
+                    <span style={{ display: "flex", justifyContent: "space-around", paddingLeft: "18px" }} >
+                        <small >
 
-                        {post?.likes?.length}
+                            {post?.likes?.length}
                         </small>
-                        <small style={{paddingLeft:"3px"}} > likes </small>
+                        <small style={{ paddingLeft: "3px" }} > likes </small>
                     </span>
-                    <span style={{marginRight:"10px"}}> 
+                    <span style={{ marginRight: "10px" }}>
                         <small>
 
-                        {post?.comments?.length}
+                            {post?.comments?.length}
                         </small>
-                        <small style={{paddingLeft:"3px"}}>
-                        comments
+                        <small style={{ paddingLeft: "3px" }}>
+                            comments
                         </small>
                     </span>
                 </div>
@@ -271,18 +279,17 @@ export default function Post({ post, savedPost,profile,feed }) {
                     >
                         <CommentOutlinedIcon />
                     </ExpandMore>
+                    {save ? <BookmarkOutlinedIcon onClick={savePost} /> : <Save onClick={savePost} />}
+                    {/* {
+                    user?.savedPosts?.post?._id===post?._id  ? "true" : "fals"
+                } */}
+
+
                     {
-                        !save? <Save onClick={savePost}
-                        />
-                         :
-                         <BookmarkOutlinedIcon onClick={savePost}  />
-                
-                }
-                {
-                    user?.savedPosts?.post?._id===post?._id  ? "false" : console.log(user.savedPosts,"savedpostid")
-                }
-                
-                    
+                        post?.userid?.savedPosts?.post == post._id ? "saved" : "not saved"
+                    }
+
+
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
@@ -295,6 +302,7 @@ export default function Post({ post, savedPost,profile,feed }) {
                                         )
                                     })
                                 }
+
                                 <TextField
                                     name='comment'
                                     value={formik.values.comment}

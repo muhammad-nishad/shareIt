@@ -12,7 +12,6 @@ export default function SavedPosts() {
   const { token } = tokenData
   const savedPosts=()=>{
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getallSavedPosts`,{headers:{token:token}}).then(({data})=>{
-      console.log(data,'savedppostonlyyyyyyyyyyyyy');
       setPost(data.savedPosts)
     })
   }

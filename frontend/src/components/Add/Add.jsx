@@ -24,24 +24,28 @@ const UserBox = styled(Box)({
     marginBottom: "20px"
 })
 
-function Add({dispatch}) {
+function Add({ dispatch }) {
     const uploadImage = () => {
+
+        // alert(URL.createObjectURL(imageSelected))
+
+
         const formData = new FormData()
         formData.append("file", imageSelected)
         formData.append("upload_preset", "kacy6ucl")
         try {
-            let token1 =  Cookies.get('user')
+            let token1 = Cookies.get('user')
             token1 = JSON.parse(token1)
-            const {token } = token1
+            const { token } = token1
             axios.post("https://api.cloudinary.com/v1_1/dl0nkbe8b/image/upload", formData).then((response) => {
                 const img = response.data.url
-                 axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, { img,description }, { headers: { token: token } }).then(({data}) => {
-                    console.log(data,'responseof post addd');
+                axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, { img, description }, { headers: { token: token } }).then(({ data }) => {
+                    console.log(data, 'responseof post addd');
                     dispatch({
                         type: "NEW_POST",
                         payload: data
-                      })
-                      setOpen(false)
+                    })
+                    setOpen(false)
                 })
             })
 
@@ -53,14 +57,14 @@ function Add({dispatch}) {
 
     };
     const { user } = useSelector(state => ({ ...state }))
-    const value=useSelector((state)=>{
+    const value = useSelector((state) => {
         return state;
 
     })
-    console.log(user?.user?.first_name)
     const [open, setOpen] = useState(false)
     const [imageSelected, setImageSelected] = useState()
-    const [description,setDescription]=useState()
+    const [description, setDescription] = useState()
+    const [file, setFile] = useState("");
     return (
         <>
             <Tooltip onClick={e => setOpen(true)}
@@ -76,20 +80,30 @@ function Add({dispatch}) {
                 </Fab>
             </Tooltip>
 
+
             <StyledModal
                 open={open}
-                onClose={e => setOpen(false)}
+                onClose={e => {setOpen(false)
+                    setFile(false)
+                }}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description" >
-                <Box width={400} height={310} bgcolor='white' p={3} borderRadius={5} >
+                <Box width={400} maxHeight={680} bgcolor='white' p={3} borderRadius={5} >
                     <Typography variant='h6' color='grey' textAlign='center'>make a post</Typography>
                     <UserBox>
                         <Avatar
-                            src={user? user?.profilePicture:"icons/blankprofile.webp"}
+                            src={user ? user?.profilePicture : "icons/blankprofile.webp"}
                             sx={{ width: 30, height: 30 }}
                         />
                         <Typography fontWeight={500} variant='span'>{user?.first_name}</Typography>
                     </UserBox>
+                    {file ? (
+                        <img
+                            src={file ? file : null}
+                            style={{ width: "300px", height: "150px", marginLeft: "45px" }}
+                            alt=""
+                        />
+                    ) : null}
                     <TextField
                         sx={{ width: '100%' }}
                         id="standard-multiline-static"
@@ -98,31 +112,54 @@ function Add({dispatch}) {
                         placeholder="What's on your mind ?"
                         variant="standard"
                         name='description'
-                        onChange={(e)=>{
+                        onChange={(e) => {
                             setDescription(e.target.value);
                         }}
                     />
+                   
                     <Stack direction='row' gap={1} marginTop={2} mb={3}>
                         <input
                             style={{ display: 'none' }}
                             type="file"
                             onChange={(e) => {
                                 setImageSelected(e.target.files[0])
+                                setFile(URL.createObjectURL(e.target.files[0]));
                             }}
                             id="image_input"
                         />
-                        <label className="img_label" htmlFor="image_input" style={{cursor:"pointer"}} >
+                        <label className="img_label" htmlFor="image_input" style={{ cursor: "pointer" }} >
                             <Image color='secondary'
                             />
                         </label>
                     </Stack>
-                    <ButtonGroup  fullWidth variant="contained" aria-label="outlined primary button group">
-                        <Button  onClick={uploadImage}  >Post</Button>
+                    <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
+                        <Button onClick={uploadImage}  >Post</Button>
                     </ButtonGroup>
                 </Box>
             </StyledModal>
+            {/* {
+                imageSelected && (
+                    <div style={styles.preview} >
+                        <img
+                        src={URL.createObjectURL(imageSelected)}
+
+                        />
+                        
+                    </div>
+                )
+            } */}
+
         </>
     )
 }
 
 export default Add
+
+const styles = {
+    preview: {
+        marginTop: 50,
+        display: 'flex',
+        flexDirection: "column"
+    }
+
+}

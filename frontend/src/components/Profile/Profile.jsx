@@ -7,9 +7,10 @@ import Post from '../Post/Post'
 import Sidebar from '../Sidebar/Sidebar'
 import Topbar from '../Userprofile/Topbar'
 
-export default function Profile({id}) {
+export default function Profile({id , own}) {
   const [{ posts }, dispatch] = useReducer(postsReducer, { posts: [] })
   const [post,setPosts]= useState([])
+  const [following,setFollowing] = useState(false)
   const [profile,setProfile]=useState()
   console.log(posts, 'posts');
   const { user } = useSelector(state => ({ ...state }))
@@ -20,6 +21,7 @@ export default function Profile({id}) {
   const getUserProfile = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id ? id : user._id}`, { headers: { token: token } }).then(({ data }) => {
       // console.log(data, 'getuserprofile');
+      dispatch({ type: 'REFRESH' })
       setProfile(data.user)
       console.log(data.user,'userrr1111');
       setPosts(data.post)
@@ -27,6 +29,9 @@ export default function Profile({id}) {
         type: "POSTS_SUCCESS",
         payload: data.post
       })
+      if(!own){
+        setFollowing(data.following)
+      }
     }).catch(err => {
       console.log(err, 'catch block of axios');
     })
@@ -42,13 +47,10 @@ export default function Profile({id}) {
     <>
       <Navbar />
 
-      <Topbar id={id} profile={profile} post={post} />
+      <Topbar id={id} profile={profile} post={post} following={following} setFollowing={setFollowing} />
 
       <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
-        
-
           {
-
             posts?.map((post) => (<Post key={post._id} post={post} profile={profile}  />))
           }
           {/* {

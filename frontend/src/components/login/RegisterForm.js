@@ -111,7 +111,7 @@ const tempYear= new Date().getFullYear()
 
  }
   return (
-    <div className="blur">
+    <div className="blur1">
       <div className="register">
         <div className="register_header">
           <i className="exit_icon" onClick={()=>setVisible(false)}></i>

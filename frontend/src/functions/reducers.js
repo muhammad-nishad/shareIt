@@ -14,6 +14,13 @@ export function postsReducer(state, action) {
         posts: [action.payload,...state.posts],
         error: "",
       };
+      // case "SAVED_POST":
+      //   return{
+      //     ...state,
+      //     loading :false,
+      //     posts:action.payload,
+      //     error:"",
+      //   }
     default:
       return state;
   }
