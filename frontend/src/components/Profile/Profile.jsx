@@ -20,7 +20,7 @@ export default function Profile({id , own}) {
 
   const getUserProfile = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/getUserProfile/${id ? id : user._id}`, { headers: { token: token } }).then(({ data }) => {
-      // console.log(data, 'getuserprofile');
+      console.log(data, 'getuserprofile');
       dispatch({ type: 'REFRESH' })
       setProfile(data.user)
       console.log(data.user,'userrr1111');

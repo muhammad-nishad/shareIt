@@ -25,18 +25,33 @@ const UserBox = styled(Box)({
 })
 
 function Add({ dispatch }) {
+    let token1 = Cookies.get('user')
+    token1 = JSON.parse(token1)
+    const { token } = token1
+
+    const upload=()=>{
+        if(imageSelected){
+            uploadImage()
+        }else{
+            axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, {  description }, { headers: { token: token } }).then(({ data }) => {
+                console.log(data, 'responseof post addd');
+                dispatch({
+                    type: "NEW_POST",
+                    payload: data
+                })
+                setOpen(false)
+            })
+
+        }
+    }
     const uploadImage = () => {
-
+    
         // alert(URL.createObjectURL(imageSelected))
-
-
         const formData = new FormData()
         formData.append("file", imageSelected)
         formData.append("upload_preset", "kacy6ucl")
         try {
-            let token1 = Cookies.get('user')
-            token1 = JSON.parse(token1)
-            const { token } = token1
+           
             axios.post("https://api.cloudinary.com/v1_1/dl0nkbe8b/image/upload", formData).then((response) => {
                 const img = response.data.url
                 axios.post(`${process.env.REACT_APP_BACKEND_URL}/posts`, { img, description }, { headers: { token: token } }).then(({ data }) => {
@@ -133,7 +148,7 @@ function Add({ dispatch }) {
                         </label>
                     </Stack>
                     <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
-                        <Button onClick={uploadImage}  >Post</Button>
+                        <Button onClick={upload} >Post</Button>
                     </ButtonGroup>
                 </Box>
             </StyledModal>

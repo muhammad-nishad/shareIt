@@ -24,8 +24,8 @@ export default function People() {
 
 
     const getUser = async () => {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getPeopleMayKnow`,{ headers: { token: token } }).then(({data})=>{
-            console.log(data [0],'111111');
+         axios.get(`${process.env.REACT_APP_BACKEND_URL}/getPeopleMayKnow`,{ headers: { token: token } }).then(({data})=>{
+            console.log(data,'people you may know')
             setUsers(data)
         })
     }

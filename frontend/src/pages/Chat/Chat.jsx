@@ -7,10 +7,10 @@ import ChatBox from '../../components/ChatBox/ChatBox';
 import Conversation from '../../components/Conversation/Conversation';
 import './Chat.css'
 import { io } from 'socket.io-client'
+import Navbar from '../../components/Navbar/Navbar';
 
 export default function Chat() {
     const { user } = useSelector(state => ({ ...state }))
-    console.log(user._id, 'jjjjj');
     const [chats, setChats] = useState([])
     const [currentChat, setCurrentChat] = useState(null)
     const [onlineUsers, setOnlineUsers] = useState([])
@@ -27,7 +27,7 @@ export default function Chat() {
 
     }, [sendMessage])
 
-   
+
     useEffect(() => {
         socket.current = io('http://localhost:8800')
         socket.current.emit("new-user-add", user._id)
@@ -37,9 +37,9 @@ export default function Chat() {
         })
 
     }, [user])
-    
-     // receive message from socket server
-     useEffect(() => {
+
+    // receive message from socket server
+    useEffect(() => {
         socket.current.on("receive-message", (data) => {
             setReceieveMessage(data)
 
@@ -58,26 +58,29 @@ export default function Chat() {
     }, [user])
 
     return (
-        <div className='Chat'>
-            <div className='Left-side-chat'>
-                <div className='Chat-container'>
-                    <h2>Chats</h2>
-                    <div className='chat-list'>
-                        {chats.map((chat) => (
-                            <div onClick={() => setCurrentChat(chat)} key={chat._id} >
-                                <Conversation data={chat} currentUserId={user._id} />
-                            </div>
-                        )
-                        )}
+        <>
+            <Navbar />
+            <div className='Chat'>
+                <div className='Left-side-chat'>
+                    <div className='Chat-container'>
+                        <h2>Chats</h2>
+                        <div className='chat-list'>
+                            {chats.map((chat) => (
+                                <div onClick={() => setCurrentChat(chat)} key={chat._id} >
+                                    <Conversation data={chat} currentUserId={user._id} />
+                                </div>
+                            )
+                            )}
+                        </div>
                     </div>
                 </div>
+                <div className='Right-side-chat'>
+                    {/* chat body */}
+                    <ChatBox chat={currentChat} currentUser={user._id}
+                        setSendMessage={setSendMessage} receieveMessage={receieveMessage}
+                    />
+                </div>
             </div>
-            <div className='Right-side-chat'>
-                {/* chat body */}
-                <ChatBox chat={currentChat} currentUser={user._id}
-                    setSendMessage={setSendMessage} receieveMessage={receieveMessage}
-                />
-            </div>
-        </div>
+        </>
     )
 }

@@ -74,35 +74,24 @@ function Navbar({ color }) {
                 }} variant='h6' sx={{ display: { xs: 'none', sm: 'block',cursor:"pointer" } }}>
                     ShareIt
                 </Typography>
-                {/* <Search sx={{ width: "20%", left: "50%" }}>
-                    <InputBase
-                        placeholder='search'
-                        name='users'
-                        onChange={formik.handleChange}
-                        value={formik.values.users}
-                        onClick={() => (setShowSearch(true))}
-                    />
-                </Search> */}
-
                 {searchUser? searchUser.map((users)=>{
                     return (
                         <Box sx={{ width: "20%", backgroundColor: 'white', position: 'absolute', left: "38.5%", height: "50%", top: "85%", color: "black" }}>
                         {users.first_name? users.first_name: null}
                       </Box>
                       
-
                     )
                 })
                    
                     : ""
                 }
                 <Icons>
-                    <Badge badgeContent={4} color="error">
-                        <MailIcon />
-                    </Badge>
-                    <Badge badgeContent={4} color="error">
+                    {/* <Badge badgeContent={4} color="error">
+                        <MailIcon onClick={Navigate('/chat')} />
+                    </Badge> */}
+                    {/* <Badge badgeContent={4} color="error">
                         <NotificationsIcon />
-                    </Badge>
+                    </Badge> */}
                     {
                         !user?.profilePicture? <Avatar  onClick={e => setOpen(true)}  alt="B" src='icons/blankprofile.webp' sx={{ width: 30, height: 30 ,cursor:"pointer"}}/> :
                         

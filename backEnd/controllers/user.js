@@ -192,6 +192,7 @@ exports.register = async (req, res) => {
 
 
 //userLogin
+
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -218,48 +219,6 @@ exports.login = async (req, res) => {
 }
 
 
-//followUser
-// exports.follow = async (req, res) => {
-//     if (req.body.userId !== req.params.id) {
-//         try {
-//             const user = await User.findById(req.params.id);
-//             const currentUser = await User.findById(req.body.userId);
-//             if (!user.followers.includes(req.body.userId)) {
-//                 await user.updateOne({ $push: { followers: req.body.userId } });
-//                 await currentUser.updateOne({ $push: { following: req.params.id } });
-//                 res.status(200).json("user has been followed")
-//             } else {
-//                 res.status(403).json("you already follow this user")
-//             }
-//         } catch (error) {
-//             res.status(500).json(err)
-//         }
-//     } else {
-//         res.status(403).json("you cant follow yourself")
-//     }
-// }
-
-
-//unfollowUser
-// exports.unfollow = async (req, res) => {
-//     if (req.body.userId !== req.params.id) {
-//         try {
-//             const user = await User.findById(req.params.id);
-//             const currentUser = await User.findById(req.body.userId);
-//             if (user.followers.includes(req.body.userId)) {
-//                 await user.updateOne({ $pull: { followers: req.body.userId } });
-//                 await currentUser.updateOne({ $pull: { following: req.params.id } });
-//                 res.status(200).json("user has been unfollowed")
-//             } else {
-//                 res.status(403).json("you dont  follow this user")
-//             }
-//         } catch (error) {
-//             res.status(500).json(err, "error message")
-//         }
-//     } else {
-//         res.status(403).json("you cant unfollow yourself")
-//     }
-// }
 //create a post
 exports.posts = async (req, res) => {
     const userid = req.user.id
@@ -279,26 +238,34 @@ exports.posts = async (req, res) => {
 
 }
 //updatePost
-exports.updatePost = async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.id);
-        if (post.userId === req.body.userId) {
-            await post.updateOne({ $set: req.body });
-            res.status(200).json("your post has been updated successfully");
-        } else {
-            res.status(403).json("you can only update your posts only");
-        }
-    } catch (error) {
-        res.status(500).json(error)
+// exports.updatePost = async (req, res) => {
+//     try {
+//         const post = await Post.findById(req.params.id);
+//         if (post.userId === req.body.userId) {
+//             await post.updateOne({ $set: req.body });
+//             res.status(200).json("your post has been updated successfully");
+//         } else {
+//             res.status(403).json("you can only update your posts only");
+//         }
+//     } catch (error) {
+//         res.status(500).json(error)
 
-    }
+//     }
 
-}
-//deletePost
+// }
+
+
+// deletePost
+
 exports.deletePost = async (req, res) => {
     try {
         const postid = mongoose.Types.ObjectId(req.body.postid)
-        const post = await Post.findByIdAndUpdate(req.body.postid, { delete: true })
+        const post = await Post.findByIdAndUpdate(req.body.postid, {
+            $set: {
+                delete: true
+            }
+        })
+        console.log(post, 'deleted');
         res.status(200).json("This Post has been deleted")
     } catch (error) {
         res.status(500).json(error)
@@ -326,6 +293,9 @@ exports.likePost = async (req, res) => {
     }
 }
 
+
+// addingComments
+
 exports.addComment = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
@@ -344,7 +314,6 @@ exports.addComment = async (req, res) => {
                 }
             })
         res.json(commented)
-
     } catch (error) {
         res.status(500).json(error)
 
@@ -352,12 +321,7 @@ exports.addComment = async (req, res) => {
 }
 
 
-
-
-
-
 //userSearch
-
 exports.userSearch = async (req, res) => {
     const searchResult = await User.find({ first_name: new RegExp('^' + req.params.data, 'i') })
     if (searchResult) {
@@ -366,6 +330,7 @@ exports.userSearch = async (req, res) => {
         res.status(400).json({ message: "no user found" })
     }
 }
+
 
 exports.getUserPost = async (req, res) => {
     try {
@@ -388,8 +353,9 @@ exports.getUserProfile = async (req, res) => {
         let following;
         req.user.id !== req.params.userid && user.followers.includes(req.user.id) ? following = true : following = false;
 
-        const post = await Post.find({ userid: userid }).populate("userid", "first_name last_name user_name")
+        const post = await Post.find({ userid: userid, delete: "false" }).populate("userid", "first_name last_name user_name")
             .sort({ createdAt: -1 })
+        console.log(post, 'userpost');
         res.json({ post, user, following })
 
     } catch (error) {
@@ -398,15 +364,17 @@ exports.getUserProfile = async (req, res) => {
     }
 }
 
+// follow User
+
 exports.follow = async (req, res) => {
     try {
         const followingId = mongoose.Types.ObjectId(req.body.userid)
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(followingId)
         const currentUser = await User.findById(req.user.id)
-        if (!user.followers.includes(userid)) {
-            await user.updateOne({ $push: { followers: userid } });
-            await currentUser.updateOne({ $push: { following: followingId } })
+        if (!user?.followers.includes(userid)) {
+            await user?.updateOne({ $push: { followers: userid } });
+            await currentUser?.updateOne({ $push: { following: followingId } })
             res.status(200).json("followed the user")
         } else {
             res.status(200).json("you alredy follow")
@@ -417,40 +385,42 @@ exports.follow = async (req, res) => {
 
     }
 }
+
+// shows all following users
 exports.getAllFollowing = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(req.user.id).populate('following')
         res.json(user)
-
     } catch (error) {
         console.log(error);
 
     }
 }
+
+// show All Followers
 exports.getAllFollowers = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(req.user.id).populate('followers')
         res.json(user)
-
     } catch (error) {
         console.log(error);
 
     }
 }
 
+// unfollow User
 exports.unfollow = async (req, res) => {
     try {
         const followingId = mongoose.Types.ObjectId(req.body.userid)
         const userid = mongoose.Types.ObjectId(req.user.id)
         const user = await User.findById(followingId)
         const currentUser = await User.findById(req.user.id)
-        if (user.followers.includes(followingId)) {
-            await currentUser.updateOne({ $pull: { followers: req.body.userId } });
-            await user.updateOne({ $pull: { following: followingId } });
+        if (user?.followers.includes(userid)) {
+            await currentUser.updateOne({ $pull: { following: followingId } });
+            await user.updateOne({ $pull: { followers: userid } });
             res.status(200).json("Unfollowed the user")
-
         } else {
             res.status(400).json("you dont follow this user")
         }
@@ -459,6 +429,8 @@ exports.unfollow = async (req, res) => {
 
     }
 }
+
+// report Post
 exports.reportPost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
@@ -481,6 +453,8 @@ exports.reportPost = async (req, res) => {
 
     }
 }
+
+
 exports.getPeopleMayKnow = async (req, res) => {
     try {
         // const userid = mongoose.Types.ObjectId(req.user.id)
@@ -497,6 +471,8 @@ exports.getPeopleMayKnow = async (req, res) => {
     }
 }
 
+
+// save a Post
 exports.savePost = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
@@ -511,7 +487,7 @@ exports.savePost = async (req, res) => {
                         }
                     }
                 });
-            res.status(200).json({type:"added"})
+            res.status(200).json({ type: "added" })
         } else {
             await user.updateOne({
                 $pull: {
@@ -520,12 +496,14 @@ exports.savePost = async (req, res) => {
                     }
                 }
             })
-            res.status(200).json({type:"removed"})
+            res.status(200).json({ type: "removed" })
         }
     } catch (error) {
         console.log(error);
     }
 }
+
+// show all SavedPosts
 exports.getSavedPosts = async (req, res) => {
     try {
         const userid = mongoose.Types.ObjectId(req.user.id)
@@ -537,6 +515,8 @@ exports.getSavedPosts = async (req, res) => {
 
     }
 }
+
+// adding ProfilePicture
 exports.addProfilePicture = async (req, res) => {
     try {
         const image = req.body.img
@@ -556,6 +536,7 @@ exports.addProfilePicture = async (req, res) => {
 
     }
 }
+
 exports.getUser = async (req, res) => {
     const id = req.params.userId
     try {
@@ -572,22 +553,28 @@ exports.getUser = async (req, res) => {
 
     }
 }
+
+// updateUserData
 exports.updateUserDetails = async (req, res) => {
     try {
         console.log(req.body, 'body');
+        const { firstName } = req.body.editData
+        const { lastName } = req.body.editData
+        console.log(lastName, 'last');
+        console.log(firstName, 'first');
         const userid = mongoose.Types.ObjectId(req.user.id)
-        const user = await User.findById(userid)
-        user.updateOne({
+        const user = await User.findById(userid).updateOne({
             $set: {
-                first_name: req.body.first_name,
-                last_name: req.body.last_name
+                first_name: firstName,
+                last_name: lastName
             }
         })
+        console.log(user,'after updaton');
         res.status(200).json("updated")
 
 
     } catch (error) {
-        res.status(200).json(error)
+        res.status(500).json(error)
 
     }
 }

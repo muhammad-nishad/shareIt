@@ -172,6 +172,16 @@ img{
     object-fit: cover;
 } */
 
+input{
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-color: black;
+    border-radius: 10px;
+
+}
+
 .gallery{
     display: flex;
     flex-wrap: wrap;

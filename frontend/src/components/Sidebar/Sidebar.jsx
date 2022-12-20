@@ -41,14 +41,14 @@ function Sidebar() {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
+          {/* <ListItem disablePadding>
             <ListItemButton component='a' href=''>
               <ListItemIcon>
                 <ExploreOutlinedIcon />
               </ListItemIcon>
               <ListItemText primary="Explore" />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
 
           <ListItem disablePadding>
             <ListItemButton component='a' href='#' onClick={(e)=>{
@@ -74,14 +74,14 @@ function Sidebar() {
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding>
+          {/* <ListItem disablePadding>
             <ListItemButton component='a' href='#'>
               <ListItemIcon>
                 <NotificationsActiveOutlinedIcon />
               </ListItemIcon>
               <ListItemText primary="Notifications" />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
         </List>
       </Box>
     </Box>

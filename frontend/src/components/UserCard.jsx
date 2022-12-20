@@ -10,7 +10,6 @@ function UserCard({ data }) {
     let tokenData = Cookies.get('user')
     tokenData = JSON.parse(tokenData)
     const { token } = tokenData
-    // const [unfollow, setUnfollow] = useState(false)
     const [follow,setFollow]=useState(false)
 
     const unfollowUser = async (id) => {
@@ -71,7 +70,7 @@ function UserCard({ data }) {
                     :
                         
                         <Button onClick={() =>{
-                            // unfollowUser(data._id);
+                            unfollowUser(data._id);
                             setFollow(false)
                             
                         }}
